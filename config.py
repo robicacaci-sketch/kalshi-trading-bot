@@ -15,6 +15,14 @@ KALSHI_ENV: str = os.getenv("KALSHI_ENV", "demo").lower()
 # No orders are placed, so there is no risk from pointing at the live endpoint.
 KALSHI_BASE_URL = "https://api.elections.kalshi.com/trade-api/v2"
 
+# Order placement uses the demo API when KALSHI_ENV == "demo".
+# Switch to live by setting KALSHI_ENV=live in your .env.
+KALSHI_ORDER_BASE_URL = (
+    "https://demo-api.kalshi.co/trade-api/v2"
+    if KALSHI_ENV == "demo"
+    else "https://api.elections.kalshi.com/trade-api/v2"
+)
+
 # --- Anthropic ---
 ANTHROPIC_API_KEY: str = os.environ["ANTHROPIC_API_KEY"]
 

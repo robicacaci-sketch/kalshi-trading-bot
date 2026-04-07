@@ -1,0 +1,21 @@
+{
+  "ticker": "KXBTC-26APR0622-B68350",
+  "question": "Bitcoin price range  on Apr 6, 2026?",
+  "market_price": 49.0,
+  "estimated_probability": 5.0,
+  "edge": -44.0,
+  "edge_classification": "STRONG",
+  "reasoning": "Based on current Bitcoin prices, the market is trading far above the required range. Multiple sources show BTC at approximately $69,000-$69,700 on April 6, 2026, which is significantly higher than the $68,300-$68,399.99 range needed for a YES resolution. Since the market closes at 10 PM EDT on April 6 and Bitcoin would need to drop over $800 in the final hours to reach the target range, the probability is extremely low.",
+  "key_factors": [
+    "<cite index=\"1-1,2-1,3-1,5-1\">Current BTC price around $69,000-$69,700, well above the required $68,300-$68,399.99 range</cite>",
+    "<cite index=\"11-3,11-4\">BRTI is calculated every second and provides precise Bitcoin pricing for institutional settlements</cite>",
+    "Market closes in approximately 14 hours, requiring significant price decline",
+    "<cite index=\"2-10,3-5\">Recent upward momentum driven by Iran ceasefire news and positive market sentiment</cite>"
+  ],
+  "risks": [
+    "Potential for sharp Bitcoin volatility in final hours",
+    "Geopolitical developments could trigger sudden price movements",
+    "Large sell orders or market manipulation near settlement time",
+    "Technical issues with BRTI calculation or data sources"
+  ]
+}

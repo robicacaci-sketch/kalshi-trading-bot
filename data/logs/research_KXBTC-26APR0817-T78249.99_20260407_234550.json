@@ -1,0 +1,22 @@
+{
+  "ticker": "KXBTC-26APR0817-T78249.99",
+  "question": "Bitcoin price range on Apr 8, 2026?",
+  "market_price": 2.0,
+  "estimated_probability": 3.5,
+  "edge": 1.5,
+  "edge_classification": "MARGINAL",
+  "reasoning": "Bitcoin needs to increase 13-15% (~$9,000-$10,000) in roughly 30 hours to reach $78,250. Current price around $68,400 faces significant headwinds: extreme fear sentiment (Fear & Greed Index at 11), range-bound trading since February between $62K-$75K, and geopolitical tensions. While Bitcoin briefly touched $70,000 on ceasefire reports, sustained moves above $75,000 resistance have failed repeatedly. Daily volatility averages 2.17% recently, making a 13%+ move within one day unlikely despite theoretical GARCH volatility of 39%.",
+  "key_factors": [
+    "Current price ~$68,400 vs target $78,250",
+    "Range-bound market since February 2026",
+    "Extreme fear sentiment (Fear & Greed Index: 11)",
+    "Geopolitical tensions affecting crypto markets",
+    "Recent failed attempts to break $75,000 resistance"
+  ],
+  "risks": [
+    "Sudden positive news catalyst could trigger large moves",
+    "Low liquidity during specific hours could cause price spikes",
+    "Geopolitical resolution could spark risk-on sentiment",
+    "Institutional buying could create rapid price acceleration"
+  ]
+}

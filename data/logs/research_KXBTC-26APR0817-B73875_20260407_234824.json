@@ -1,0 +1,22 @@
+{
+  "ticker": "KXBTC-26APR0817-B73875",
+  "question": "Bitcoin price range on Apr 8, 2026?",
+  "market_price": 3.0,
+  "estimated_probability": 0.5,
+  "edge": -2.5,
+  "edge_classification": "NO_EDGE",
+  "reasoning": "Current Bitcoin price is around $68,400-68,700 across major exchanges, requiring an approximately 8-9% increase to reach the $73,750-73,999.99 range. Given Bitcoin's high volatility (1.22% daily) and the narrow 24-hour window until resolution at 5 PM EDT on April 8, this represents a significant but not impossible move. The market is pricing this at only 3%, which seems overly pessimistic given Bitcoin's typical daily volatility can easily accommodate such moves.",
+  "key_factors": [
+    "Current Bitcoin price around $68,400-68,700",
+    "Need 8-9% price increase to reach target range",
+    "Bitcoin daily volatility is 1.22%",
+    "Resolution in less than 24 hours",
+    "BRTI calculated every second from major exchanges"
+  ],
+  "risks": [
+    "Bitcoin showing recent bearish technical signals",
+    "Narrow price band ($250 range) makes precise targeting difficult",
+    "Short time window limits opportunity for major price moves",
+    "Market appears to be in consolidation pattern around $67,000-69,000"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "ticker": "KXBTC-26APR0622-B68450",
+  "question": "Bitcoin price range on Apr 6, 2026?",
+  "market_price": 58.0,
+  "estimated_probability": 15.0,
+  "edge": -43.0,
+  "edge_classification": "STRONG",
+  "reasoning": "Based on current market data, Bitcoin is trading significantly above the target range of $68,400-$68,499.99. Multiple sources show BTC at $69,355-$69,836 as of April 6, 2026 morning hours, and the market has been volatile with strong upward momentum driven by Iran ceasefire news. The target range represents only a $100 window ($68,400-$68,499.99) while current prices are $800-$1,400 above this range. Given Bitcoin's typical daily volatility of several thousand dollars and the current bullish momentum, the probability of the 60-second average at 10 PM EDT falling precisely within this narrow $100 range is very low.",
+  "key_factors": [
+    "Current BTC price $69,355-$69,836, well above target range",
+    "Strong bullish momentum from Iran ceasefire news driving 4%+ daily gains",
+    "Target range is only $100 wide in highly volatile market",
+    "Market showing consistent upward pressure throughout April 6",
+    "High trading volumes and continued institutional inflows supporting higher prices"
+  ],
+  "risks": [
+    "Extreme Bitcoin volatility could cause rapid price swings before 10 PM EDT",
+    "Geopolitical developments could reverse current bullish sentiment",
+    "Market manipulation or large sell orders could temporarily push price down",
+    "CF Benchmarks BRTI may differ from spot exchange prices due to calculation methodology"
+  ]
+}

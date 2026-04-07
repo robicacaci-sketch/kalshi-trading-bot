@@ -12,6 +12,7 @@ import json
 import logging
 import sys
 import time
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -66,6 +67,9 @@ def get(path: str, params: dict, private_key, retries: int = 1):
 
 
 RELAXED_MARKET_LIMIT = 2000
+# Max markets contributed by each series_ticker to the combined final pool.
+# Prevents any single category (e.g. KXBTC) from dominating the output.
+TOP_PER_CATEGORY = 3
 
 CATEGORY_TICKERS = [
     "KXBTC", "KXETH", "KXINX", "KXSPY", "KXFED", "KXCPI",
@@ -135,6 +139,8 @@ def relaxed_score(m: dict) -> float:
     """Score for --relaxed mode: no candlestick calls.
     Weights: urgency (closer expiry) 60%, price in 20-80 cent sweet spot 40%.
     Bonus: spread quality (+0.2 weight) when bid/ask spread < 0.10.
+    Penalty: markets closing today (dte < 0.5) are multiplied by 0.1 —
+    same-day narrow-range markets rarely have tradeable edge.
     Uses yes_bid_dollars / yes_ask_dollars fields from the live API.
     """
     dte = days_to_expiry(m.get("close_time", ""))
@@ -156,7 +162,14 @@ def relaxed_score(m: dict) -> float:
     else:
         spread_bonus = 0.0
 
-    return urgency * 0.6 + price_score * 0.4 + spread_bonus
+    score = urgency * 0.6 + price_score * 0.4 + spread_bonus
+
+    # Heavy penalty for same-day expiry: scarce information edge and thin
+    # price ranges make these poor research targets.
+    if dte < 0.5:
+        score *= 0.1
+
+    return score
 
 
 def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: float, relaxed: bool = False):
@@ -190,6 +203,8 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
     ]
     log.info("After days_to_expiry <= %d: %d markets", max_days, len(after_expiry))
 
+    by_category: dict[str, list] = {}  # populated in relaxed mode only
+
     if relaxed:
         # --- Relaxed pre-filters (applied before scoring, no API calls) ---
 
@@ -214,9 +229,33 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
             m["direction"] = "n/a"
             m["days_to_expiry"] = round(days_to_expiry(m.get("close_time", "")), 1)
             m["score"] = round(relaxed_score(m), 4)
-        pool.sort(key=lambda m: m["score"], reverse=True)
-        top10 = pool[:10]
-        mode_label = f"RELAXED — top 10 of {len(pool)}"
+
+        # --- Per-category breakdown: log top 10 per series and cap contribution ---
+        by_category = defaultdict(list)
+        for m in pool:
+            ticker = m.get("ticker") or ""
+            series = ticker.split("-")[0] if ticker else "OTHER"
+            by_category[series].append(m)
+
+        log.info("Per-category top 10 (before combining):")
+        diverse_pool: list[dict] = []
+        for series in sorted(by_category):
+            cat_markets = sorted(by_category[series], key=lambda m: m["score"], reverse=True)
+            top10_cat = cat_markets[:10]
+            scores_str = ", ".join(f"{m['score']:.3f}" for m in top10_cat[:3])
+            log.info(
+                "  %-8s %3d markets  top-3 scores: [%s]  tickers: %s",
+                series, len(cat_markets), scores_str,
+                [m.get("ticker") for m in top10_cat[:3]],
+            )
+            diverse_pool.extend(cat_markets[:TOP_PER_CATEGORY])
+
+        diverse_pool.sort(key=lambda m: m["score"], reverse=True)
+        top10 = diverse_pool[:10]
+        mode_label = (
+            f"RELAXED — top {TOP_PER_CATEGORY}/category × {len(by_category)} categories"
+            f" → global top 10 of {len(pool)}"
+        )
     else:
         # --- Normal mode: filter 3 — price move via candlestick API ---
         flagged = []
@@ -305,7 +344,24 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
         json.dump(records, f, indent=2)
     log.info("Results saved to %s", out_path)
 
-    # --- Print markdown table ---
+    # --- Print per-category summary (relaxed mode only) ---
+    if relaxed and by_category:
+        cat_header = f"{'Category':<10} {'Mkts':>5}  {'Top ticker':<32} {'Score':>6}  {'Days':>5}"
+        print("\n" + "=" * len(cat_header))
+        print(f"Per-Category Top Markets  |  {now_str}")
+        print("=" * len(cat_header))
+        print(cat_header)
+        print("-" * len(cat_header))
+        for series in sorted(by_category):
+            cat_markets = sorted(by_category[series], key=lambda m: m["score"], reverse=True)
+            best = cat_markets[0]
+            print(
+                f"{series:<10} {len(cat_markets):>5}  {best.get('ticker', ''):<32}"
+                f" {best['score']:>6.3f}  {best['days_to_expiry']:>5}"
+            )
+        print("=" * len(cat_header))
+
+    # --- Print global combined table ---
     header = f"{'Rank':<5} {'Ticker':<30} {'Yes $':<7} {'Move':>8} {'Volume':>8} {'Days':>5} {'Score':>6}"
     print("\n" + "=" * len(header))
     print(f"Kalshi Scanner Results  |  {now_str}  |  {mode_label}")

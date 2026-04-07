@@ -1,0 +1,26 @@
+{
+  "current_bankroll": 902.8599999999999,
+  "current_positions": [
+    {
+      "ticker": "KXETH-26APR0817-B2400",
+      "side": "no",
+      "count": 53,
+      "price": 0.94,
+      "size_dollars": 49.82,
+      "order_id": "SIMULATED-KXETH-26APR0817-B2400",
+      "placed_at": "2026-04-07T23:37:31.009039+00:00"
+    },
+    {
+      "ticker": "KXETH-26APR0817-B2360",
+      "side": "no",
+      "count": 52,
+      "price": 0.91,
+      "size_dollars": 47.32,
+      "order_id": "SIMULATED-KXETH-26APR0817-B2360",
+      "placed_at": "2026-04-07T23:37:31.009039+00:00"
+    }
+  ],
+  "daily_pnl": 0.0,
+  "date": "2026-04-07",
+  "last_run": "2026-04-07T23:42:57.852603+00:00"
+}

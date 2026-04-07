@@ -1,0 +1,23 @@
+{
+  "ticker": "KXBTC-26APR0720-B72050",
+  "question": "Bitcoin price range on Apr 7, 2026?",
+  "market_price": 3.0,
+  "estimated_probability": 0.5,
+  "edge": -2.5,
+  "edge_classification": "MARGINAL",
+  "reasoning": "Based on current data, <cite index=\"1-1,2-2,3-1,16-1\">Bitcoin is trading around $68,269-$68,428 as of various times today</cite>, which is approximately $3,700-$3,800 below the target range of $72,000-$72,099.99. <cite index=\"5-1,5-5\">Bitcoin briefly touched $70,000 on ceasefire reports but remains range-bound</cite>. With about 5 hours until the 8 PM EDT resolution and Bitcoin needing to gain roughly 5-6% to reach the target range, this represents a significant but not impossible move given Bitcoin's volatility. However, <cite index=\"4-1,4-6\">Bitcoin has been trapped in a range between $62,000-$75,000 for two months</cite>, making a breakout less likely in the immediate timeframe.",
+  "key_factors": [
+    "Current BTC price around $68,400, needing ~5.6% gain to reach $72K range",
+    "Bitcoin briefly touched $70K today on Iran ceasefire news but pulled back",
+    "Two-month range-bound trading pattern between $62K-$75K limits breakout probability",
+    "High oil prices and geopolitical tensions creating headwinds for risk assets",
+    "Resolution requires BRTI average over 60 seconds at exactly 8 PM EDT"
+  ],
+  "risks": [
+    "Bitcoin's high volatility could drive rapid price movements in remaining hours",
+    "Geopolitical news flow could trigger significant buying or selling pressure",
+    "Low market liquidity in evening hours could amplify price movements",
+    "ETF flows and institutional activity could impact price around resolution time",
+    "Technical resistance levels around $70K-$72K may limit upward momentum"
+  ]
+}

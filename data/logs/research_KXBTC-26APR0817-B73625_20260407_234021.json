@@ -1,0 +1,23 @@
+{
+  "ticker": "KXBTC-26APR0817-B73625",
+  "question": "Bitcoin price range on Apr 8, 2026?",
+  "market_price": 3.0,
+  "estimated_probability": 4.5,
+  "edge": 1.5,
+  "edge_classification": "MARGINAL",
+  "reasoning": "Based on current Bitcoin prices around $68,300-$68,900, reaching the target range of $73,500-$73,749.99 within approximately 32 hours requires a significant price movement of about 7-8%. While Bitcoin has shown volatility and briefly touched $70,000 recently amid geopolitical developments, sustaining a move to the narrow $73.5K-$73.75K band is challenging given current market conditions and range-bound trading patterns. The 60-second average requirement for BRTI at 5 PM EDT creates additional precision requirements.",
+  "key_factors": [
+    "<cite index=\"1-1,2-8,3-1\">Current Bitcoin price around $68,200-$68,400</cite>",
+    "<cite index=\"4-1,4-5\">Bitcoin briefly touched $70,000 on ceasefire reports but showed hesitation</cite>",
+    "<cite index=\"5-2,5-7\">Bitcoin has been range-bound between $62,000-$75,000 for two months</cite>",
+    "<cite index=\"11-1,11-2\">BRTI calculates Bitcoin price every second from major exchanges</cite>",
+    "<cite index=\"5-5\">High oil prices at $107/barrel and Iran tensions creating headwinds</cite>"
+  ],
+  "risks": [
+    "Requires 7-8% price increase in ~32 hours to reach target range",
+    "Narrow $250 price band creates precision challenge for 60-second average",
+    "Current range-bound market conditions limit upside momentum",
+    "Geopolitical tensions and macro headwinds may cap rallies",
+    "Market showing mixed signals with strong sell technical indicators"
+  ]
+}

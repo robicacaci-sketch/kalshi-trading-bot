@@ -1,0 +1,23 @@
+{
+  "ticker": "KXBTC-26APR0720-B72150",
+  "question": "Bitcoin price range on Apr 7, 2026?",
+  "market_price": 4.0,
+  "estimated_probability": 1.5,
+  "edge": -2.5,
+  "edge_classification": "MARGINAL",
+  "reasoning": "Current Bitcoin price data shows BTC trading in the $68,200-$69,000 range as of April 7, 2026. The target range is $72,100-$72,199.99, requiring a significant ~4-6% price increase by 8 PM EDT today. While some sources mention brief touches of $70,000 and potential for moves toward $72,000-$75,000, the current trading patterns show Bitcoin has been range-bound between $62,000-$75,000 for two months with resistance at higher levels. The geopolitical tensions with Iran and overall market uncertainty create additional headwinds for such a precise range hit today.",
+  "key_factors": [
+    "Current BTC price around $68,200-$69,000, needs ~4-6% gain to reach target range",
+    "Bitcoin has been range-bound between $62,000-$75,000 for two months",
+    "Strong resistance levels observed around $70,000-$72,000",
+    "Geopolitical uncertainty with Iran-US tensions creating market headwinds",
+    "ETF inflows showing institutional interest but price action remains sluggish"
+  ],
+  "risks": [
+    "Bitcoin's recent volatility could drive unexpected price movements",
+    "Geopolitical developments could cause rapid price swings",
+    "Market closes at 8 PM EDT, limited time for significant price movement",
+    "CF Benchmarks BRTI uses 60-second average, reducing impact of brief spikes",
+    "Current price is significantly below target range with strong resistance levels"
+  ]
+}

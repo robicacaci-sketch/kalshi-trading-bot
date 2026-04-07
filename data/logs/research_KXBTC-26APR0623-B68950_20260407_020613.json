@@ -1,0 +1,21 @@
+{
+  "ticker": "KXBTC-26APR0623-B68950",
+  "question": "Bitcoin price range on Apr 6, 2026?",
+  "market_price": 2.0,
+  "estimated_probability": 0.1,
+  "edge": -1.9,
+  "edge_classification": "MARGINAL",
+  "reasoning": "The market resolves YES only if Bitcoin's BRTI average is between $68,900-$68,999.99 at 11 PM EDT. Current data shows Bitcoin trading at $69,355-$69,836 as of morning hours on April 6, 2026. Given the high volatility and the fact that prices need to fall into a very narrow $100 range from levels that are already $400-900 above the target range, the probability is extremely low despite some downward pressure expected.",
+  "key_factors": [
+    "Bitcoin currently trading $400-900 above target range of $68,900-68,999.99",
+    "Market needs to hit very narrow $100 price window at specific time",
+    "High intraday volatility creates some possibility but low likelihood",
+    "BRTI uses 60-second average reducing impact of single price spikes"
+  ],
+  "risks": [
+    "Significant market volatility could cause unexpected price movements",
+    "Geopolitical developments (Iran ceasefire talks) affecting crypto sentiment",
+    "Weekend manipulation or coordinated selling pressure",
+    "Technical differences between exchange prices and BRTI calculation"
+  ]
+}

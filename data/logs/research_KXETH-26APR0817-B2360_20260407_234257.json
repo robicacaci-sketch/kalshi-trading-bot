@@ -1,0 +1,23 @@
+{
+  "ticker": "KXETH-26APR0817-B2360",
+  "question": "Ethereum price at Apr 8, 2026 at 5pm EDT?",
+  "market_price": 9.0,
+  "estimated_probability": 2.0,
+  "edge": -7.0,
+  "edge_classification": "MODERATE",
+  "reasoning": "Ethereum is currently trading around $2,080-$2,133 as of April 7, 2026, with high volatility but generally bearish short-term momentum. The target range of $2,340-$2,379.99 represents a 10-15% increase from current levels within less than 24 hours. Technical indicators show bearish MACD, oversold RSI conditions, and resistance near $2,200-$2,350 levels. Multiple forecasts predict ETH will struggle to break above $2,300 in the immediate term, with most April 2026 predictions ranging $2,000-$2,250.",
+  "key_factors": [
+    "Current ETH price around $2,080-$2,133, needing 10-15% gain to reach target range",
+    "Bearish technical momentum with negative MACD and RSI near oversold at 39",
+    "Strong resistance identified at $2,200-$2,350 levels by multiple analysts",
+    "High derivatives leverage creating potential for sharp moves but also liquidation risk",
+    "Geopolitical uncertainty with Iran war tensions affecting crypto sentiment"
+  ],
+  "risks": [
+    "Extreme crypto volatility could cause unexpected price spikes",
+    "Positive geopolitical developments could trigger sudden rally",
+    "Large whale accumulation patterns could support upside breakout",
+    "ETF inflows or institutional buying could drive rapid price movement",
+    "Technical breakout above $2,200 resistance could accelerate gains toward target"
+  ]
+}
