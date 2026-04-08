@@ -1,0 +1,22 @@
+{
+  "ticker": "KXCPI-26APR-T0.4",
+  "question": "Will CPI rise more than 0.4% in April 2026?",
+  "market_price": 54.0,
+  "estimated_probability": 72.0,
+  "edge": 18.0,
+  "edge_classification": "STRONG",
+  "reasoning": "March 2026 CPI data (releasing April 10) is expected to show a dramatic spike to 0.9-1.0% monthly increase due to Iran war energy shock. With gasoline prices up 19% in two weeks and energy expected to jump 10.6% monthly, March will create difficult year-over-year comparisons for April. Even assuming energy stabilizes, the elevated base effects from March's spike make a >0.4% April increase highly probable as secondary inflation effects filter through to other categories.",
+  "key_factors": [
+    "Iran war causing energy price shock - gasoline up 57 cents/gallon (19%) in two weeks",
+    "March CPI consensus forecasts 0.9-1.0% monthly increase, creating high base effects",
+    "Energy expected to contribute 10.6% monthly increase in March CPI report",
+    "Secondary inflation effects from transportation and fertilizer costs building",
+    "Fed revised 2026 inflation forecast upward from 2.4% to 2.7%"
+  ],
+  "risks": [
+    "Rapid de-escalation of Iran conflict could stabilize energy prices faster than expected",
+    "Strong dollar could offset some commodity price increases",
+    "Shelter inflation continuing to moderate could provide offset",
+    "Used vehicle prices showing weakness could dampen core inflation"
+  ]
+}

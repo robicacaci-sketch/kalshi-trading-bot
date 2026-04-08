@@ -75,6 +75,9 @@ TOP_PER_CATEGORY_CRYPTO = 2   # applied to KXBTC and KXETH
 MACRO_SERIES = {"KXFED", "KXCPI", "KXGDP", "KXINX"}
 NARROW_CRYPTO_SERIES = {"KXBTC", "KXETH"}
 
+MIN_OPEN_INTEREST = 100   # contracts; below this the market is essentially empty
+MIN_ASK_SIZE = 50         # contracts; minimum ask-side depth to get filled
+
 CATEGORY_TICKERS = [
     "KXBTC", "KXETH", "KXINX", "KXSPY", "KXFED", "KXCPI",
     "KXGDP", "KXNHL", "KXNBA", "KXMLB",
@@ -239,6 +242,26 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
 
         after_expiry = [m for m in after_expiry if has_pricing(m)]
         log.info("After dropping zero-priced markets: %d markets", len(after_expiry))
+
+        # Liquidity filter: drop markets with no meaningful open interest or ask depth
+        def is_liquid(m: dict) -> bool:
+            oi = float(m.get("open_interest_fp") or 0)
+            if oi < MIN_OPEN_INTEREST:
+                return False
+            yes_bid = float(m.get("yes_bid_dollars") or 0)
+            ask_size = float(m.get("yes_ask_size_fp") or 0)
+            if yes_bid == 0 and ask_size < MIN_ASK_SIZE:
+                return False
+            return True
+
+        before_liquidity = len(after_expiry)
+        after_expiry = [m for m in after_expiry if is_liquid(m)]
+        log.info(
+            "After liquidity filter (OI>=%d, ask_size>=%d when no bid): %d markets"
+            " (dropped %d)",
+            MIN_OPEN_INTEREST, MIN_ASK_SIZE, len(after_expiry),
+            before_liquidity - len(after_expiry),
+        )
 
         # --- Relaxed ranking: score purely on urgency + price attractiveness, no API calls ---
         pool = after_expiry

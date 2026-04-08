@@ -1,0 +1,23 @@
+{
+  "ticker": "KXGDP-26APR30-T2.0",
+  "question": "Will real GDP increase by more than 2.0% in Q1 2026?",
+  "market_price": 54.0,
+  "estimated_probability": 32.0,
+  "edge": -22.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The Atlanta Fed GDPNow model, widely regarded as the most accurate real-time GDP nowcast, has consistently revised Q1 2026 growth estimates downward throughout April. The latest estimate as of April 7th is only 1.3%, down from 1.6% on April 2nd and 2.0% on March 23rd. This significant deterioration in nowcast estimates, coupled with weak Q4 2025 growth of only 1.4% (later revised down to 0.7%), suggests economic momentum has slowed considerably. With the BEA advance estimate due April 30th, the probability of exceeding 2.0% appears much lower than the 54% market price suggests.",
+  "key_factors": [
+    "Atlanta Fed GDPNow estimate declined to 1.3% as of April 7, 2026",
+    "Consistent downward revisions throughout March and April 2026",
+    "Weak Q4 2025 GDP growth of 0.7% (second estimate) creates low base",
+    "GDPNow has average absolute error of 0.77 percentage points historically",
+    "Consumer spending and investment growth nowcasts both revised down"
+  ],
+  "risks": [
+    "GDPNow model could be overly pessimistic - other forecasts may be more accurate",
+    "Late-quarter economic data could significantly revise estimates upward",
+    "BEA methodology differences from nowcast models could produce higher reading",
+    "Seasonal adjustment factors might favor Q1 growth more than expected",
+    "Model accuracy decreases further from release date"
+  ]
+}

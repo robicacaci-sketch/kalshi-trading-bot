@@ -1,0 +1,23 @@
+{
+  "ticker": "KXGDP-26APR30-T2.0",
+  "question": "Will real GDP increase by more than 2.0% in Q1 2026?",
+  "market_price": 54.0,
+  "estimated_probability": 35.0,
+  "edge": -19.0,
+  "edge_classification": "STRONG",
+  "reasoning": "Multiple nowcasting models point to Q1 2026 GDP growth likely falling below 2.0%. The Atlanta Fed GDPNow estimate has declined to 1.3% as of early April, down from over 2% in late March due to weaker retail sales and consumer spending data. The St. Louis Fed Economic News Index shows 1.7% growth, while other models range from 1.6% to 2.1%. Given Q4 2025's weak 0.7% revised growth and ongoing economic headwinds, the probability of exceeding 2.0% appears significantly lower than the 54% market price suggests.",
+  "key_factors": [
+    "Atlanta Fed GDPNow at 1.3% (down from 2%+ in March)",
+    "St. Louis Fed nowcast at 1.7%",
+    "Weaker consumer spending and retail sales data",
+    "Q4 2025 GDP revised down to 0.7%",
+    "Mixed economic signals with labor market strength but consumption weakness"
+  ],
+  "risks": [
+    "Final week data releases could surprise positively",
+    "BEA methodology differences from nowcast models",
+    "Economic data revisions between now and April 30th",
+    "Potential measurement errors in preliminary data",
+    "New York Fed nowcast at 2.4% suggests upside possibility"
+  ]
+}

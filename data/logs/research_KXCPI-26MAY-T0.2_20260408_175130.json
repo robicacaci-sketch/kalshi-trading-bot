@@ -1,0 +1,23 @@
+{
+  "ticker": "KXCPI-26MAY-T0.2",
+  "question": "Will CPI rise more than 0.2% in May 2026?",
+  "market_price": 60.0,
+  "estimated_probability": 48.0,
+  "edge": -12.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The market question asks for May 2026 monthly CPI to rise more than 0.2% (seasonally adjusted). Recent CPI data shows February rose 0.3% and January rose 0.2%. While inflation forecasts show upward pressure from tariffs and other factors in 2026, the specific monthly threshold of >0.2% for May creates a high bar. Long Forecast predicts declining CPI rates through May 2026, and multiple expert analyses suggest peak inflation pressures may occur earlier in Q2 2026, potentially before May.",
+  "key_factors": [
+    "Recent monthly CPI readings: February +0.3%, January +0.2%",
+    "Tariff passthrough effects expected to peak in Q2 2026",
+    "Energy price headwinds from geopolitical tensions",
+    "Housing inflation still elevated but showing signs of moderation",
+    "Seasonal adjustment factors may influence May reading"
+  ],
+  "risks": [
+    "Unpredictable oil price spikes from Iran conflict",
+    "Faster-than-expected tariff passthrough to consumer prices",
+    "Data revisions could affect historical comparisons",
+    "Supply chain disruptions could drive food/goods inflation",
+    "Methodological changes in CPI weighting for 2026"
+  ]
+}
