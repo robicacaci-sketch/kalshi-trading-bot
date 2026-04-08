@@ -67,9 +67,13 @@ def get(path: str, params: dict, private_key, retries: int = 1):
 
 
 RELAXED_MARKET_LIMIT = 2000
-# Max markets contributed by each series_ticker to the combined final pool.
-# Prevents any single category (e.g. KXBTC) from dominating the output.
+# Max markets contributed by each series to the combined final pool.
+# Crypto categories get a tighter cap to avoid dominating the output.
 TOP_PER_CATEGORY = 3
+TOP_PER_CATEGORY_CRYPTO = 2   # applied to KXBTC and KXETH
+
+MACRO_SERIES = {"KXFED", "KXCPI", "KXGDP", "KXINX"}
+NARROW_CRYPTO_SERIES = {"KXBTC", "KXETH"}
 
 CATEGORY_TICKERS = [
     "KXBTC", "KXETH", "KXINX", "KXSPY", "KXFED", "KXCPI",
@@ -138,11 +142,15 @@ def percentile_rank(values: list[float], value: float) -> float:
 def relaxed_score(m: dict) -> float:
     """Score for --relaxed mode: no candlestick calls.
     Weights: urgency (closer expiry) 60%, price in 20-80 cent sweet spot 40%.
-    Bonus: spread quality (+0.2 weight) when bid/ask spread < 0.10.
-    Penalty: markets closing today (dte < 0.5) are multiplied by 0.1 —
-    same-day narrow-range markets rarely have tradeable edge.
+    Bonuses / penalties applied after base score:
+      +0.50  macro series (KXFED, KXCPI, KXGDP, KXINX) — rich public data
+      ×0.10  same-day expiry (dte < 0.5) — scarce edge, thin price range
+      ×0.20  narrow hourly crypto range markets (KXBTC/KXETH, -B/-T, dte < 3)
+      +0.20  spread quality (bid/ask spread < $0.10)
     Uses yes_bid_dollars / yes_ask_dollars fields from the live API.
     """
+    ticker: str = m.get("ticker") or ""
+    series = ticker.split("-")[0]
     dte = days_to_expiry(m.get("close_time", ""))
     urgency = 1 / max(dte, 0.1)
 
@@ -164,10 +172,22 @@ def relaxed_score(m: dict) -> float:
 
     score = urgency * 0.6 + price_score * 0.4 + spread_bonus
 
-    # Heavy penalty for same-day expiry: scarce information edge and thin
-    # price ranges make these poor research targets.
+    # Macro bonus: FED/CPI/GDP/INX markets have rich public data and genuine edge.
+    if series in MACRO_SERIES:
+        score += 0.5
+
+    # Same-day expiry penalty: scarce information edge, thin price ranges.
     if dte < 0.5:
         score *= 0.1
+
+    # Narrow hourly crypto range penalty: KXBTC/KXETH markets with a "-B" or "-T"
+    # band suffix expiring within 3 days are effectively coin-flip noise trades.
+    if (
+        series in NARROW_CRYPTO_SERIES
+        and dte < 3
+        and ("-B" in ticker or "-T" in ticker)
+    ):
+        score *= 0.2
 
     return score
 
@@ -243,12 +263,13 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
             cat_markets = sorted(by_category[series], key=lambda m: m["score"], reverse=True)
             top10_cat = cat_markets[:10]
             scores_str = ", ".join(f"{m['score']:.3f}" for m in top10_cat[:3])
+            cap = TOP_PER_CATEGORY_CRYPTO if series in NARROW_CRYPTO_SERIES else TOP_PER_CATEGORY
             log.info(
-                "  %-8s %3d markets  top-3 scores: [%s]  tickers: %s",
-                series, len(cat_markets), scores_str,
+                "  %-8s %3d markets  top-3 scores: [%s]  cap=%d  tickers: %s",
+                series, len(cat_markets), scores_str, cap,
                 [m.get("ticker") for m in top10_cat[:3]],
             )
-            diverse_pool.extend(cat_markets[:TOP_PER_CATEGORY])
+            diverse_pool.extend(cat_markets[:cap])
 
         diverse_pool.sort(key=lambda m: m["score"], reverse=True)
         top10 = diverse_pool[:10]

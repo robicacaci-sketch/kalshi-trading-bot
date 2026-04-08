@@ -1,0 +1,23 @@
+{
+  "ticker": "KXETH-26APR0817-B2440",
+  "question": "Ethereum price at Apr 8, 2026 at 5pm EDT?",
+  "market_price": 5.0,
+  "estimated_probability": 2.5,
+  "edge": -2.5,
+  "edge_classification": "MARGINAL",
+  "reasoning": "Current ETH price is around $2,080-2,140, requiring a 15-19% increase to reach the target range of $2,420-$2,459.99 within approximately 33 hours. This is possible but unlikely given current bearish technical indicators (RSI below 50, weak momentum, geopolitical uncertainty with Iran war). Most price predictions suggest consolidation or modest gains, not the significant jump needed.",
+  "key_factors": [
+    "Current price around $2,080-2,140 needs 15-19% gain to reach target range",
+    "Technical indicators show bearish/neutral sentiment with RSI around 50-54",
+    "Geopolitical uncertainty with Iran war creating market volatility",
+    "Short 33-hour timeframe limits probability of large price movement",
+    "Recent trend shows consolidation rather than strong upward momentum"
+  ],
+  "risks": [
+    "Sudden positive news could trigger rapid price appreciation",
+    "Crypto markets can be highly volatile in short timeframes",
+    "CF Benchmarks methodology may differ from exchange prices shown",
+    "Market manipulation or large institutional trades could cause spikes",
+    "Technical analysis may not capture all market dynamics"
+  ]
+}

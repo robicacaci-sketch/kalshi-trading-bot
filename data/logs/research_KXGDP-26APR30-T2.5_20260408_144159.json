@@ -1,0 +1,23 @@
+{
+  "ticker": "KXGDP-26APR30-T2.5",
+  "question": "Will real GDP increase by more than 2.5% in Q1 2026?",
+  "market_price": 41.0,
+  "estimated_probability": 25.0,
+  "edge": -16.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The Q1 2026 GDP advance estimate will be released on April 30, 2026 according to BEA's schedule, which is the same day the market closes. Recent GDP trends show significant deceleration: Q4 2025 grew only 1.4% (advance) then revised down to 0.7% (second estimate), while Q3 2025 was 4.4%. Deloitte forecasts healthy 2.2% annual GDP growth for 2026, but this would translate to much lower quarterly rates. Given the sharp slowdown from Q3 to Q4 2025 and typical quarterly volatility, achieving >2.5% quarterly growth in Q1 2026 appears unlikely.",
+  "key_factors": [
+    "BEA advance estimate releases April 30, 2026 at market close",
+    "Recent deceleration: Q4 2025 only 0.7% (second estimate) vs Q3 4.4%",
+    "Deloitte forecasts 2.2% annual growth for 2026",
+    "Government shutdown impacts reduced Q4 2025 growth by ~1 percentage point",
+    "Historical quarterly GDP volatility and economic headwinds"
+  ],
+  "risks": [
+    "Q1 2026 could see rebound from Q4 2025 government shutdown effects",
+    "AI investment boom could boost business spending significantly",
+    "Consumer spending recovery could drive stronger growth",
+    "Measurement timing: advance estimate subject to revision",
+    "Market closes same day as data release, limiting reaction time"
+  ]
+}

@@ -139,16 +139,16 @@ def main() -> None:
 
     log.info("Scheduler running — press Ctrl+C to stop")
 
-    try:
-        while True:
-            schedule.run_pending()
-            # Sleep in short increments so Ctrl+C is responsive
-            import time
-            time.sleep(5)
-    except KeyboardInterrupt:
-        log.info("Scheduler stopped by user (Ctrl+C)")
-        print("\nScheduler stopped.")
+    import time
+    while True:
+        schedule.run_pending()
+        time.sleep(5)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        log.info("Scheduler stopped by user (Ctrl+C)")
+        print("\nScheduler stopped.")
+        sys.exit(0)
