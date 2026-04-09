@@ -1,0 +1,20 @@
+{
+  "ticker": "KXCPI-26MAR-T1.1",
+  "question": "Will CPI rise more than 1.1% in March 2026?",
+  "market_price": 3.0,
+  "estimated_probability": 100.0,
+  "edge": 97.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The March 2026 CPI data has already been released on April 10, 2026. Multiple sources confirm the monthly CPI increase was between 0.8% and 0.9%, with most reliable sources citing 0.9%. Since the market asks if CPI will rise MORE than 1.1% in March 2026, and the actual increase was approximately 0.9%, the market should resolve to NO. However, given the current YES price of 3%, there appears to be significant market mispricing.",
+  "key_factors": [
+    "March 2026 CPI data already released showing ~0.9% monthly increase",
+    "Multiple credible sources confirm increase was below 1.1% threshold",
+    "Energy price shocks from Iran conflict drove the increase but insufficient to breach 1.1%",
+    "Market resolution should be NO based on official BLS data"
+  ],
+  "risks": [
+    "Potential data revision by BLS (though unlikely to change by 0.2+ percentage points)",
+    "Misinterpretation of resolution criteria or data source",
+    "Market may be pricing in small probability of measurement error"
+  ]
+}

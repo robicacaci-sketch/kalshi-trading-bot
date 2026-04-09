@@ -1,0 +1,22 @@
+{
+  "ticker": "KXINX-26APR10H1600-T6924.9999",
+  "question": "Will the S&P 500 be above 6924.9999 on Apr 10, 2026 at 4pm EDT?",
+  "market_price": 4.0,
+  "estimated_probability": 15.0,
+  "edge": 11.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The S&P 500 needs to reach above 6925 by April 10. <cite index=\"13-1\">The index rose to 6783 points on April 8, 2026</cite>, meaning it needs to gain approximately 142 points (2.1%) in just two trading days. While <cite index=\"4-14\">historical data shows the S&P 500 has returned an average 16% over the 12 months following bearish sentiment readings above 50%</cite>, achieving a 2.1% gain in two days during current volatile conditions with ongoing geopolitical tensions is challenging. <cite index=\"5-5,5-6\">The index underwent a \"Death Cross\" in late March and continues to trade below both the 50-day and 200-day moving averages</cite>, indicating technical weakness that makes such a rapid recovery unlikely.",
+  "key_factors": [
+    "Current S&P 500 level around 6783, requiring 2.1% gain in 2 days",
+    "Technical breakdown with Death Cross pattern still in effect",
+    "Ongoing geopolitical tensions from U.S.-Iran conflict creating volatility",
+    "Market down 4% year-to-date despite recent bounce",
+    "Strong resistance levels at key moving averages"
+  ],
+  "risks": [
+    "Sudden positive resolution to geopolitical tensions could spark rally",
+    "Market has shown ability for sharp daily moves recently",
+    "Low probability events can still occur in volatile conditions",
+    "Two trading days still allows for potential momentum build"
+  ]
+}

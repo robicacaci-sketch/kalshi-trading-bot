@@ -1,0 +1,22 @@
+{
+  "ticker": "KXINX-26APR09H1600-B6887",
+  "question": "Will the S&P 500 be between 6875 and 6899.9999 on Apr 9, 2026 at 4pm EDT?",
+  "market_price": 5.0,
+  "estimated_probability": 2.0,
+  "edge": -3.0,
+  "edge_classification": "MARGINAL",
+  "reasoning": "The S&P 500 has shown significant volatility in April 2026, with recent values around 6,783 as of April 8th following a U.S.-Iran ceasefire announcement. <cite index=\"1-1\">The main stock market index of United States, the US500, rose to 6783 points on April 8, 2026, gaining 2.52% from the previous session.</cite> However, the index remains well below the target range of 6875-6900. Technical analysis suggests the index is struggling with resistance levels and remains in a bearish trend despite recent gains. The two-week ceasefire may provide temporary relief, but the target range would require an additional 90+ point gain (1.3-1.6%) in very limited time.",
+  "key_factors": [
+    "Current S&P 500 level around 6,783 as of April 8th",
+    "U.S.-Iran ceasefire providing temporary market relief",
+    "Technical resistance at moving averages above current levels",
+    "High volatility due to geopolitical tensions",
+    "Limited time remaining for significant price movement"
+  ],
+  "risks": [
+    "Ceasefire could break down causing market selloff",
+    "Oil price volatility affecting market sentiment",
+    "Technical resistance preventing upward movement",
+    "End-of-trading-day volatility could create unexpected moves"
+  ]
+}

@@ -59,7 +59,7 @@ STOP_FILE = config.ROOT_DIR / "STOP"
 STATE_FILE = config.LOG_DIR / "state.json"
 EXEC_LOG_FILE = config.LOG_DIR / "executor_log.json"
 
-MAX_MARKETS_PER_RUN = 5
+MAX_MARKETS_PER_RUN = 3
 INITIAL_BANKROLL = 1000.0   # demo starting balance
 
 # ---------------------------------------------------------------------------

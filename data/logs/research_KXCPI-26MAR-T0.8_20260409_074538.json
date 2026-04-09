@@ -1,0 +1,21 @@
+{
+  "ticker": "KXCPI-26MAR-T0.8",
+  "question": "Will CPI rise more than 0.8% in March 2026?",
+  "market_price": 68.0,
+  "estimated_probability": 25.0,
+  "edge": -43.0,
+  "edge_classification": "STRONG",
+  "reasoning": "Based on search results, multiple sources indicate the March 2026 CPI actually increased 0.3% month-over-month, which is significantly below the 0.8% threshold needed for YES resolution. <cite index=\"5-7\">The BLS report shows the Consumer Price Index for All Urban Consumers (CPI-U) increased 0.3% in March on a seasonally adjusted basis.</cite> This was despite earlier forecasts predicting much higher inflation due to energy price spikes from the Iran conflict. <cite index=\"14-17\">Headline CPI is expected to be up 0.8% from February to March and 3.1% from the year prior, according to FactSet.</cite> The actual result came in well below these expectations.",
+  "key_factors": [
+    "March 2026 CPI reported as 0.3% monthly increase, well below 0.8% threshold",
+    "Energy price impact from Iran conflict was less severe than initially feared",
+    "Market appears to be pricing in pre-release forecasts rather than actual data",
+    "Core CPI showed contained inflation pressures despite energy concerns"
+  ],
+  "risks": [
+    "Potential data revisions could change the official figure",
+    "Market may have access to information not reflected in search results",
+    "Resolution criteria interpretation could differ from standard CPI reporting",
+    "Timing confusion between forecast expectations and actual reported data"
+  ]
+}

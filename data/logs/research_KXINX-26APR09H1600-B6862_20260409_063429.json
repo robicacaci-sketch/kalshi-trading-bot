@@ -1,0 +1,22 @@
+{
+  "ticker": "KXINX-26APR09H1600-B6862",
+  "question": "Will the S&P 500 be between 6850 and 6874.9999 on Apr 9, 2026 at 4pm EDT?",
+  "market_price": 9.0,
+  "estimated_probability": 3.0,
+  "edge": -6.0,
+  "edge_classification": "MODERATE",
+  "reasoning": "The S&P 500 closed at 6782.81 on April 8, requiring a 1% gain to reach the 6850 lower bound. While markets rallied on ceasefire news, the target range of 6850-6875 represents a very narrow 25-point band requiring precise timing. Current levels suggest the index would need to gap up significantly and hold gains throughout the day, which is unlikely given recent volatility and the narrow target window.",
+  "key_factors": [
+    "Current level at 6782.81 as of April 8 close",
+    "Need 1% gain minimum to reach target range",
+    "Very narrow 25-point target band",
+    "Recent volatility from Iran ceasefire developments",
+    "Market already rallied 2.5% yesterday on ceasefire news"
+  ],
+  "risks": [
+    "Further geopolitical developments could drive volatility",
+    "Profit-taking after yesterday's 2.5% rally",
+    "Economic data releases could move markets",
+    "Ceasefire remains fragile with only 2-week timeline"
+  ]
+}

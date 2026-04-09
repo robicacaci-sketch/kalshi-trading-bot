@@ -1,0 +1,23 @@
+{
+  "ticker": "KXINX-26APR10H1600-B6912",
+  "question": "Will the S&P 500 be between 6900 and 6924.9999 on Apr 10, 2026 at 4pm EDT?",
+  "market_price": 3.0,
+  "estimated_probability": 8.0,
+  "edge": 5.0,
+  "edge_classification": "MODERATE",
+  "reasoning": "The S&P 500 closed at 6783 on April 8 after a 2.5% rally on ceasefire news. To reach the 6900-6925 range by tomorrow's close requires another 1.7-2.1% gain in one day. While geopolitical volatility has created large daily moves recently, the market just experienced a significant relief rally and would need another substantial move upward. The narrow 25-point target window and single-day timeframe make this outcome unlikely despite recent volatility.",
+  "key_factors": [
+    "Current S&P 500 level at 6783",
+    "Need for 1.7-2.1% gain in one day",
+    "Recent ceasefire providing market relief",
+    "High geopolitical volatility environment",
+    "Narrow 25-point target range"
+  ],
+  "risks": [
+    "Ceasefire could break down suddenly",
+    "Additional geopolitical developments",
+    "Market momentum could continue upward",
+    "Oil price movements affecting sentiment",
+    "Fed policy uncertainty"
+  ]
+}

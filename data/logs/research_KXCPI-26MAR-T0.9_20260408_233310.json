@@ -1,0 +1,19 @@
+{
+  "ticker": "KXCPI-26MAR-T0.9",
+  "question": "Will CPI rise more than 0.9% in March 2026?",
+  "market_price": 30.0,
+  "estimated_probability": 5.0,
+  "edge": -25.0,
+  "edge_classification": "STRONG",
+  "reasoning": "Based on the March 2026 CPI report, the Consumer Price Index increased only 0.3% on a seasonally adjusted basis in March, well below the 0.9% threshold required for YES resolution. Despite earlier predictions of a large energy-driven spike due to Middle East conflict, the actual monthly increase was significantly lower than the market-implied probability of 30%.",
+  "key_factors": [
+    "March CPI increased only 0.3% monthly vs 0.9% threshold",
+    "Energy price impacts were less severe than predicted",
+    "Annual inflation rate reached 2.8% but monthly change was modest"
+  ],
+  "risks": [
+    "Data revision possibility",
+    "Measurement error in initial reports",
+    "Potential confusion between different CPI measures"
+  ]
+}

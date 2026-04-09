@@ -1,0 +1,23 @@
+{
+  "ticker": "KXGDP-26APR30-T2.0",
+  "question": "Will real GDP increase by more than 2.0% in Q1 2026?",
+  "market_price": 55.0,
+  "estimated_probability": 25.0,
+  "edge": -30.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The Atlanta Fed GDPNow model has consistently revised Q1 2026 real GDP growth estimates downward throughout March and April 2026, falling from over 3% in early March to just 1.3% as of April 7th. This latest estimate of 1.3% is well below the 2.0% threshold needed for the market to resolve YES. While the New York Fed nowcast is higher at 2.4%, the Atlanta Fed model is specifically designed to track GDP using the same methodology as the BEA's advance estimate that will determine the market resolution.",
+  "key_factors": [
+    "Atlanta Fed GDPNow latest estimate of 1.3% for Q1 2026 (as of April 7)",
+    "Consistent downward revisions from 3.1% in February to 1.3% in early April",
+    "Weak retail sales and personal consumption expenditure data driving revisions lower",
+    "Q4 2025 GDP was revised down to just 0.7% (annualized), showing economic momentum slowing",
+    "Market resolves on April 30th BEA advance estimate, just 3 weeks away"
+  ],
+  "risks": [
+    "New York Fed nowcast at 2.4% suggests some models see higher growth potential",
+    "Final economic data releases before April 30th could surprise to upside",
+    "GDPNow model has average absolute error of 0.77 percentage points historically",
+    "Strong labor market data (unemployment at 4.3%) could support consumer spending",
+    "AI-related investment strength mentioned in some forecasts could boost growth"
+  ]
+}

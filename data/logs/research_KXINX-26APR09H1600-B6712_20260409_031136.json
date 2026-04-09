@@ -1,0 +1,20 @@
+{
+  "ticker": "KXINX-26APR09H1600-B6712",
+  "question": "Will the S&P 500 be between 6700 and 6724.9999 on Apr 9, 2026 at 4pm EDT?",
+  "market_price": 25.0,
+  "estimated_probability": 5.0,
+  "edge": -20.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The S&P 500 closed at 6,782.81 on April 8, which is 58-82 points above the target range of 6700-6724.9999. Given the strong positive momentum from the U.S.-Iran ceasefire announcement and significant oil price declines, the index would need to decline 0.74-1.21% today to fall into this narrow range, which seems highly unlikely given current market conditions.",
+  "key_factors": [
+    "S&P 500 currently trading well above target range at 6,782.81",
+    "Strong positive momentum from ceasefire announcement",
+    "Oil prices down 16% supporting market rally",
+    "Very narrow 25-point target range creates low probability"
+  ],
+  "risks": [
+    "Unexpected negative news could cause market decline",
+    "Geopolitical developments could reverse ceasefire optimism",
+    "Market volatility could push index into range temporarily"
+  ]
+}

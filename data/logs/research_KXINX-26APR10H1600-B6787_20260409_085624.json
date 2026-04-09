@@ -1,0 +1,23 @@
+{
+  "ticker": "KXINX-26APR10H1600-B6787",
+  "question": "Will the S&P 500 be between 6775 and 6799.9999 on Apr 10, 2026 at 4pm EDT?",
+  "market_price": 15.0,
+  "estimated_probability": 6.5,
+  "edge": -8.5,
+  "edge_classification": "STRONG",
+  "reasoning": "The S&P 500 closed at 6783 on April 8 after a 2.52% rally, but technical analysis shows the index trading below key moving averages with resistance at 6783. The market faces significant volatility from geopolitical tensions, with just a two-week ceasefire and ongoing concerns about Iran-US conflicts. The target range of 6775-6799 requires the index to remain near current highs tomorrow, but analysts expect continued volatility and potential downward pressure given the technical breakdown and macro uncertainties.",
+  "key_factors": [
+    "S&P 500 at 6783 on April 8, just above target range lower bound",
+    "Two-week Iran-US ceasefire providing temporary relief but fragile",
+    "Index trading below 50-day (6783) and 200-day moving averages",
+    "High market volatility expected around geopolitical developments",
+    "Technical resistance at current levels after recent rally"
+  ],
+  "risks": [
+    "Ceasefire breakdown could cause sharp market decline",
+    "High intraday volatility could push price outside narrow range",
+    "Oil price fluctuations affecting broader market sentiment",
+    "Technical weakness suggests limited upside momentum",
+    "Earnings and economic data could drive unexpected moves"
+  ]
+}

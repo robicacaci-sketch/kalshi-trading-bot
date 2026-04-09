@@ -1,0 +1,20 @@
+{
+  "ticker": "KXCPI-26MAR-T0.8",
+  "question": "Will CPI rise more than 0.8% in March 2026?",
+  "market_price": 67.0,
+  "estimated_probability": 0.0,
+  "edge": -67.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The March 2026 CPI data has been officially released showing a 0.3% monthly increase, which is well below the 0.8% threshold required for a YES resolution. The market appears to be pricing in pre-release expectations rather than the actual reported data.",
+  "key_factors": [
+    "Official BLS data shows 0.3% monthly CPI increase",
+    "Market threshold is 0.8%",
+    "Data already released on April 10",
+    "Clear resolution criteria"
+  ],
+  "risks": [
+    "Data revision possibility",
+    "Interpretation of BLS methodology",
+    "Seasonal adjustment differences"
+  ]
+}

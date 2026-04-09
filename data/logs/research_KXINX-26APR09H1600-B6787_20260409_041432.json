@@ -1,0 +1,21 @@
+{
+  "ticker": "KXINX-26APR09H1600-B6787",
+  "question": "Will the S&P 500 be between 6775 and 6799.9999 on Apr 9, 2026 at 4pm EDT?",
+  "market_price": 15.0,
+  "estimated_probability": 85.0,
+  "edge": 70.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The S&P 500 closed yesterday (April 8) at 6,782.81, which is already within the target range of 6775-6799.9999. Given the market's recent stability around this level and typical daily volatility, there's a very high probability it will remain in this narrow 25-point range today. The 15% market price severely undervalues this probability.",
+  "key_factors": [
+    "S&P 500 closed at 6,782.81 on April 8, already in target range",
+    "Target range is only 25 points wide (6775-6799.9999)",
+    "Recent trading has been relatively stable around current levels",
+    "Market resolves today at 4pm EDT"
+  ],
+  "risks": [
+    "Intraday volatility could push index outside narrow range",
+    "Ongoing geopolitical tensions from Iran conflict could cause sharp moves",
+    "Final hour profit-taking or institutional rebalancing",
+    "Economic news releases could trigger significant price movement"
+  ]
+}

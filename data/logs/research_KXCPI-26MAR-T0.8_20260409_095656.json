@@ -1,0 +1,23 @@
+{
+  "ticker": "KXCPI-26MAR-T0.8",
+  "question": "Will CPI rise more than 0.8% in March 2026?",
+  "market_price": 68.0,
+  "estimated_probability": 45.0,
+  "edge": -23.0,
+  "edge_classification": "STRONG",
+  "reasoning": "Multiple analyst forecasts point to exactly 0.8% monthly CPI growth for March 2026, making this a critical threshold event. The market is pricing 68% probability of exceeding 0.8%, but consensus forecasts suggest the result will likely be at or very close to 0.8%. Given the precision required to exceed rather than meet this threshold, and the tendency for CPI to be rounded to single decimal places in official reporting, the probability should be lower than current market pricing.",
+  "key_factors": [
+    "Consensus forecast of exactly 0.8% monthly CPI growth",
+    "Critical threshold at 0.8% creates binary outcome sensitivity",
+    "Official release timing confirmed for April 10, 2026 at 8:30 AM",
+    "Energy price pressures from geopolitical conflicts",
+    "Market closes after data release, creating information asymmetry"
+  ],
+  "risks": [
+    "Forecasts could be incorrect due to energy price volatility",
+    "Seasonal adjustments might differ from expectations",
+    "Rounding methodology in official BLS reporting",
+    "Last-minute energy price spikes from Iran conflict",
+    "Historical forecast accuracy limitations in volatile periods"
+  ]
+}
