@@ -1,0 +1,23 @@
+{
+  "ticker": "KXINX-26APR10H1600-T6924.9999",
+  "question": "Will the S&P 500 be above 6924.9999 on Apr 10, 2026 at 4pm EDT?",
+  "market_price": 4.0,
+  "estimated_probability": 25.0,
+  "edge": 21.0,
+  "edge_classification": "STRONG",
+  "reasoning": "The S&P 500 is currently around 6,785-6,827, needing a 1.4-2.0% gain in one day to reach 6925. While geopolitical tensions persist with the fragile Iran ceasefire and oil above $100, the market has shown strong momentum with a 2.5% rally on Wednesday. Technical resistance exists at these levels, but the current volatility environment makes a 1.4-2% move within normal daily ranges. The 4% market price severely undervalues this probability.",
+  "key_factors": [
+    "Current S&P 500 level around 6,785-6,827 vs target of 6925",
+    "Only needs 1.4-2.0% gain in one trading day",
+    "Recent strong momentum with 2.5% Wednesday rally",
+    "Ongoing geopolitical volatility creating large daily moves",
+    "Market has shown ability to move 2%+ in single sessions recently"
+  ],
+  "risks": [
+    "Fragile Iran ceasefire could collapse causing market selloff",
+    "Oil prices above $100 creating economic headwinds",
+    "Technical resistance near current levels",
+    "Only one trading day remaining for the move",
+    "Broader market uncertainty from Middle East tensions"
+  ]
+}

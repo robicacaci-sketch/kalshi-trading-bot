@@ -50,6 +50,7 @@ if not log.handlers:
 from scripts.scanner import scan
 from scripts.researcher import research
 from scripts.risk_engine import validate_trade
+from scripts.resolver import resolve_positions
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -262,7 +263,20 @@ def run_once() -> dict:
         return summary
 
     # ------------------------------------------------------------------
-    # 3. Scanner — relaxed mode for broadest market coverage
+    # 3. Resolve any settled positions before scanning for new ones
+    # ------------------------------------------------------------------
+    try:
+        resolve_positions()
+        # Reload state so bankroll reflects any settlements
+        state = load_state()
+        bankroll = state["current_bankroll"]
+        positions = state["current_positions"]
+        daily_pnl = state["daily_pnl"]
+    except Exception as exc:
+        log.error("Resolver error (non-fatal, continuing): %s", exc)
+
+    # ------------------------------------------------------------------
+    # 4. Scanner — relaxed mode for broadest market coverage
     # ------------------------------------------------------------------
     log.info("Starting scanner (relaxed mode)...")
     try:
@@ -285,7 +299,7 @@ def run_once() -> dict:
     top_markets = markets[:MAX_MARKETS_PER_RUN]
 
     # ------------------------------------------------------------------
-    # 4. Research → validate → order for each candidate
+    # 5. Research → validate → order for each candidate
     # ------------------------------------------------------------------
     for i, market in enumerate(top_markets):
         ticker: str = market["ticker"]
@@ -443,7 +457,7 @@ def run_once() -> dict:
             summary["actions"].append({"ticker": ticker, "event": "order_failed"})
 
     # ------------------------------------------------------------------
-    # 5. Persist updated state
+    # 6. Persist updated state
     # ------------------------------------------------------------------
     state["current_positions"] = positions
     save_state(state)

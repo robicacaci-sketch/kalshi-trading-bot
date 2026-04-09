@@ -126,15 +126,16 @@ def print_status() -> None:
 
 def main() -> None:
     log.info("Kalshi Scheduler starting (env=%s)", config.KALSHI_ENV)
-    log.info("Run interval : every 4 hours")
+    log.info("Run times    : 9:00 AM ET (13:00 UTC) and 4:00 PM ET (20:00 UTC)")
     log.info("Status line  : every 30 minutes")
     log.info("STOP file    : %s", STOP_FILE)
 
-    # Run immediately on start, then on the 60-minute cadence
+    # Run immediately on start, then at the two daily scheduled times
     run_executor()
     _state["next_run"] = datetime.now(timezone.utc)
 
-    schedule.every(4).hours.do(run_executor)
+    schedule.every().day.at("13:00").do(run_executor)  # 9:00 AM ET
+    schedule.every().day.at("20:00").do(run_executor)  # 4:00 PM ET
     schedule.every(30).minutes.do(print_status)
 
     log.info("Scheduler running — press Ctrl+C to stop")

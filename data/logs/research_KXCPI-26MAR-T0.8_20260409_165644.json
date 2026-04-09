@@ -1,0 +1,23 @@
+{
+  "ticker": "KXCPI-26MAR-T0.8",
+  "question": "Will CPI rise more than 0.8% in March 2026?",
+  "market_price": 66.0,
+  "estimated_probability": 85.0,
+  "edge": 19.0,
+  "edge_classification": "STRONG",
+  "reasoning": "Multiple credible sources indicate March 2026 CPI likely increased around 0.9% month-over-month due to Iran conflict driving oil prices to $120 and gasoline up $1/gallon. Cleveland Fed nowcasting projects significant inflation jump, and several economist forecasts suggest 0.8-0.9% monthly increases. While some sources show 0.3%, the weight of evidence from energy price impacts and geopolitical tensions strongly suggests the threshold will be exceeded.",
+  "key_factors": [
+    "Iran conflict causing energy price surge with oil near $120/barrel",
+    "Gasoline prices up roughly $1 per gallon in March",
+    "Cleveland Fed inflation nowcasting projecting significant jump",
+    "Multiple economist forecasts suggesting 0.8-0.9% monthly increase",
+    "Energy supply disruption in Strait of Hormuz affecting global oil flows"
+  ],
+  "risks": [
+    "Conflicting reports showing 0.3% vs 0.9% actual results",
+    "Possible measurement timing differences between sources",
+    "Energy price volatility could reverse quickly with ceasefire",
+    "Core inflation remaining more contained than headline",
+    "Seasonal adjustment factors may affect final calculation"
+  ]
+}
