@@ -1,0 +1,23 @@
+{
+  "ticker": "KXINX-26APR10H1600-B6912",
+  "question": "Will the S&P 500 be between 6900 and 6924.9999 on Apr 10, 2026 at 4pm EDT?",
+  "market_price": 6.0,
+  "estimated_probability": 2.5,
+  "edge": -3.5,
+  "edge_classification": "MARGINAL",
+  "reasoning": "The S&P 500 closed at 6783 on April 8, 2026, meaning it needs to gain approximately 117-142 points (1.7-2.1%) to reach the 6900-6925 range by tomorrow's close. While markets have been volatile with significant daily moves (up 2.52% on April 8), the specific 25-point band represents a narrow target requiring precision timing. Current geopolitical tensions around US-Iran ceasefire and oil price volatility create uncertainty about sustained upward momentum.",
+  "key_factors": [
+    "Current S&P 500 level at 6783 as of April 8, requiring ~1.7-2.1% gain",
+    "Recent market volatility with daily moves of 2%+ due to geopolitical events",
+    "US-Iran ceasefire uncertainty affecting market sentiment",
+    "Oil prices volatile around $98-100/barrel impacting market direction",
+    "Technical resistance around moving averages may limit upside"
+  ],
+  "risks": [
+    "Geopolitical developments could cause significant market swings",
+    "Oil price spikes could pressure markets downward",
+    "Technical resistance levels may cap gains below 6900",
+    "Market is down 4-5% year-to-date suggesting underlying weakness",
+    "Narrow 25-point target band makes precise prediction difficult"
+  ]
+}

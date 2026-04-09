@@ -306,12 +306,6 @@ def run_once() -> dict:
         log.info("=" * 55)
         log.info("Processing: %s (%s)", ticker, market.get("title", ""))
 
-        # Pause between researcher calls to avoid Anthropic 429s.
-        # Skip the delay before the first market.
-        if i > 0:
-            log.info("Waiting 60s before next researcher call (rate-limit buffer)...")
-            time.sleep(60)
-
         # --- Pre-research checks (skip before spending API credits) ---
 
         # Skip markets we already hold a position in
@@ -332,6 +326,12 @@ def run_once() -> dict:
                     continue
             except ValueError:
                 log.warning("Could not parse close_time %r for %s — proceeding", close_time_str, ticker)
+
+        # Pause between researcher calls to avoid Anthropic 429s.
+        # Only delay if we're actually going to call the research API.
+        if i > 0:
+            log.info("Waiting 60s before next researcher call (rate-limit buffer)...")
+            time.sleep(60)
 
         # --- 4a. Research (with one retry on rate-limit) ---
         try:
