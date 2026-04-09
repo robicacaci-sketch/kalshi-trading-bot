@@ -312,6 +312,27 @@ def run_once() -> dict:
             log.info("Waiting 60s before next researcher call (rate-limit buffer)...")
             time.sleep(60)
 
+        # --- Pre-research checks (skip before spending API credits) ---
+
+        # Skip markets we already hold a position in
+        held_tickers = {p["ticker"] for p in positions}
+        if ticker in held_tickers:
+            log.info("Already holding %s — skipping", ticker)
+            summary["actions"].append({"ticker": ticker, "event": "skipped_already_held"})
+            continue
+
+        # Skip markets whose close_time has already passed
+        close_time_str: str = market.get("close_time", "")
+        if close_time_str:
+            try:
+                close_dt = datetime.fromisoformat(close_time_str.replace("Z", "+00:00"))
+                if close_dt < datetime.now(timezone.utc):
+                    log.info("Market already closed %s — skipping", ticker)
+                    summary["actions"].append({"ticker": ticker, "event": "skipped_market_closed"})
+                    continue
+            except ValueError:
+                log.warning("Could not parse close_time %r for %s — proceeding", close_time_str, ticker)
+
         # --- 4a. Research (with one retry on rate-limit) ---
         try:
             brief = research(ticker)
