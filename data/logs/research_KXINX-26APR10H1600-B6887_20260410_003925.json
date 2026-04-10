@@ -1,0 +1,21 @@
+{
+  "ticker": "KXINX-26APR10H1600-B6887",
+  "question": "Will the S&P 500 be between 6875 and 6899.9999 on Apr 10, 2026 at 4pm EDT?",
+  "market_price": 10.0,
+  "estimated_probability": 5.0,
+  "edge": -5.0,
+  "edge_classification": "MODERATE",
+  "reasoning": "The S&P 500 closed at 6,824.66 on April 9, requiring a 50-75 point gain (0.7-1.1%) to reach the narrow 25-point target range of 6875-6899.9999. While recent ceasefire optimism has driven rallies, the probability of landing in this specific narrow band is low given typical daily volatility patterns and current trading levels.",
+  "key_factors": [
+    "Current S&P 500 level around 6825",
+    "Need for 0.7-1.1% gain to reach target range",
+    "Narrow 25-point target window",
+    "Recent geopolitical volatility and ceasefire developments"
+  ],
+  "risks": [
+    "Continued geopolitical uncertainty despite ceasefire",
+    "Market could gap higher on positive news",
+    "Economic data releases could drive volatility",
+    "Target range represents less than 0.4% of index value"
+  ]
+}

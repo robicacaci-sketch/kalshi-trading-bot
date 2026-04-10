@@ -63,6 +63,9 @@ EXEC_LOG_FILE = config.LOG_DIR / "executor_log.json"
 MAX_MARKETS_PER_RUN = 3
 INITIAL_BANKROLL = 1000.0   # demo starting balance
 
+MAX_DAILY_API_COST = 2.00   # dollars — halt research when this is reached
+COST_PER_RESEARCH = 0.15    # dollars per research call (Anthropic API estimate)
+
 # ---------------------------------------------------------------------------
 # Kalshi API helpers (order placement uses KALSHI_ORDER_BASE_URL)
 # ---------------------------------------------------------------------------
@@ -171,11 +174,13 @@ _DEFAULT_STATE: dict = {
     "daily_pnl": 0.0,
     "date": None,
     "last_run": None,
+    "daily_research_calls": 0,
+    "last_run_date": None,
 }
 
 
 def load_state() -> dict:
-    """Load state from disk, resetting daily_pnl on a new calendar day."""
+    """Load state from disk, resetting daily counters on a new calendar day."""
     if STATE_FILE.exists():
         with open(STATE_FILE) as f:
             state = json.load(f)
@@ -184,9 +189,15 @@ def load_state() -> dict:
 
     today = date.today().isoformat()
     if state.get("date") != today:
-        log.info("New trading day (%s) — resetting daily_pnl to 0", today)
+        log.info("New trading day (%s) — resetting daily_pnl and research call counter", today)
         state["daily_pnl"] = 0.0
         state["date"] = today
+        state["daily_research_calls"] = 0
+        state["last_run_date"] = today
+
+    # Backfill keys missing from older state files
+    state.setdefault("daily_research_calls", 0)
+    state.setdefault("last_run_date", today)
 
     return state
 
@@ -327,6 +338,18 @@ def run_once() -> dict:
             except ValueError:
                 log.warning("Could not parse close_time %r for %s — proceeding", close_time_str, ticker)
 
+        # --- Daily API cost cap check ---
+        daily_calls: int = state.get("daily_research_calls", 0)
+        projected_cost = daily_calls * COST_PER_RESEARCH
+        if projected_cost >= MAX_DAILY_API_COST:
+            log.warning(
+                "Daily API cost cap of $%.2f reached (%d calls × $%.2f) — "
+                "halting research for today",
+                MAX_DAILY_API_COST, daily_calls, COST_PER_RESEARCH,
+            )
+            _log_action({"event": "DAILY_COST_CAP_REACHED", "daily_calls": daily_calls, "at": now})
+            break
+
         # Pause between researcher calls to avoid Anthropic 429s.
         # Only delay if we're actually going to call the research API.
         if i > 0:
@@ -357,6 +380,16 @@ def run_once() -> dict:
                 _log_action({"event": "RESEARCH_FAILED", "ticker": ticker, "error": str(exc), "at": now})
                 summary["actions"].append({"ticker": ticker, "event": "research_failed", "error": str(exc)})
                 continue
+
+        # Research succeeded — increment call counter and persist immediately
+        state["daily_research_calls"] = state.get("daily_research_calls", 0) + 1
+        save_state(state)
+        log.info(
+            "Research call %d today (~$%.2f spent of $%.2f daily cap)",
+            state["daily_research_calls"],
+            state["daily_research_calls"] * COST_PER_RESEARCH,
+            MAX_DAILY_API_COST,
+        )
 
         summary["markets_researched"] += 1
 

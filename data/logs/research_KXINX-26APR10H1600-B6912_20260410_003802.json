@@ -1,0 +1,21 @@
+{
+  "ticker": "KXINX-26APR10H1600-B6912",
+  "question": "Will the S&P 500 be between 6900 and 6924.9999 on Apr 10, 2026 at 4pm EDT?",
+  "market_price": 9.0,
+  "estimated_probability": 5.0,
+  "edge": -4.0,
+  "edge_classification": "MODERATE",
+  "reasoning": "Based on recent data, the S&P 500 closed at 6,824.66 on April 9, 2026, which is significantly below the target range of 6900-6924.9999. The index would need to gain approximately 1.1-1.5% in a single day to reach this range. While markets have been volatile due to geopolitical tensions and recent ceasefire developments, such a large single-day move to reach this specific narrow band appears unlikely. The current technical environment shows the index struggling with resistance levels around 6,783 (50-day moving average).",
+  "key_factors": [
+    "S&P 500 closed at 6,824.66 on April 9, 2026",
+    "Target range of 6900-6924.9999 requires 1.1-1.5% daily gain",
+    "Recent market volatility due to Iran-U.S. ceasefire developments",
+    "Technical resistance around 50-day moving average at 6,783"
+  ],
+  "risks": [
+    "High market volatility could cause unexpected moves",
+    "Geopolitical developments could drive significant price action",
+    "Limited time remaining for the specific range to be achieved",
+    "Recent relief rally momentum could continue"
+  ]
+}
