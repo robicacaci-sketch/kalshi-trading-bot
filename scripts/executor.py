@@ -312,6 +312,7 @@ def run_once() -> dict:
     # ------------------------------------------------------------------
     # 5. Research → validate → order for each candidate
     # ------------------------------------------------------------------
+    research_calls_this_run = 0
     for i, market in enumerate(top_markets):
         ticker: str = market["ticker"]
         log.info("=" * 55)
@@ -351,8 +352,8 @@ def run_once() -> dict:
             break
 
         # Pause between researcher calls to avoid Anthropic 429s.
-        # Only delay if we're actually going to call the research API.
-        if i > 0:
+        # Only delay if a real research call was made earlier this run.
+        if research_calls_this_run > 0:
             log.info("Waiting 60s before next researcher call (rate-limit buffer)...")
             time.sleep(60)
 
@@ -383,6 +384,7 @@ def run_once() -> dict:
 
         # Research succeeded — increment call counter and persist immediately
         state["daily_research_calls"] = state.get("daily_research_calls", 0) + 1
+        research_calls_this_run += 1
         save_state(state)
         log.info(
             "Research call %d today (~$%.2f spent of $%.2f daily cap)",
