@@ -15,6 +15,8 @@ import logging
 import re
 import sys
 import time
+import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -136,6 +138,114 @@ def build_search_query(market: dict) -> str:
 
 
 # ---------------------------------------------------------------------------
+# RSS headline fetcher
+# ---------------------------------------------------------------------------
+
+_RSS_FEEDS: dict[str, list[str]] = {
+    "KXCPI": [
+        "https://www.bls.gov/feed/bls_latest.rss",
+        "https://www.federalreserve.gov/feeds/press_all.xml",
+    ],
+    "KXFED": [
+        "https://www.bls.gov/feed/bls_latest.rss",
+        "https://www.federalreserve.gov/feeds/press_all.xml",
+    ],
+    "KXGDP": [
+        "https://apps.bea.gov/rss/rss.xml",
+        "https://www.bls.gov/feed/bls_latest.rss",
+    ],
+    "KXINX": [
+        "https://feeds.a.dj.com/rss/RSSMarketsMain.aspx",
+    ],
+    "KXSPY": [
+        "https://feeds.a.dj.com/rss/RSSMarketsMain.aspx",
+    ],
+    "KXBTC": [
+        "https://www.coindesk.com/arc/outboundfeeds/rss/",
+    ],
+    "KXETH": [
+        "https://www.coindesk.com/arc/outboundfeeds/rss/",
+    ],
+}
+
+_DEFAULT_FEEDS = [
+    "https://www.bls.gov/feed/bls_latest.rss",
+    "https://feeds.a.dj.com/rss/RSSMarketsMain.aspx",
+]
+
+
+def _fetch_one_feed(url: str, max_items: int = 5) -> list[str]:
+    """Fetch a single RSS/Atom feed and return up to max_items headline strings."""
+    resp = requests.get(url, timeout=5, headers={"User-Agent": "kalshi-bot/1.0"})
+    resp.raise_for_status()
+
+    root = ET.fromstring(resp.content)
+
+    # Strip XML namespaces from tags for uniform handling
+    def detag(tag: str) -> str:
+        return tag.split("}")[-1] if "}" in tag else tag
+
+    headlines = []
+    # RSS <item> elements
+    for item in root.iter():
+        if detag(item.tag) != "item":
+            continue
+        children = {detag(c.tag): (c.text or "").strip() for c in item}
+        title = children.get("title", "")
+        desc  = children.get("description", "")
+        if title:
+            text = title if not desc else f"{title} — {desc[:120]}"
+            headlines.append(text)
+        if len(headlines) >= max_items:
+            break
+
+    # Atom <entry> elements (e.g. Fed Reserve feed)
+    if not headlines:
+        for entry in root.iter():
+            if detag(entry.tag) != "entry":
+                continue
+            children = {detag(c.tag): (c.text or "").strip() for c in entry}
+            title   = children.get("title", "")
+            summary = children.get("summary", "")
+            if title:
+                text = title if not summary else f"{title} — {summary[:120]}"
+                headlines.append(text)
+            if len(headlines) >= max_items:
+                break
+
+    return headlines
+
+
+def fetch_rss_headlines(ticker: str, title: str) -> str:
+    """
+    Fetch recent headlines from RSS feeds relevant to the market's series.
+    Returns a formatted string ready to prepend to the Claude prompt.
+    Falls back silently on any individual feed error.
+    Total wall-clock budget: 10 seconds.
+    """
+    series = ticker.split("-")[0] if "-" in ticker else ticker
+    urls = _RSS_FEEDS.get(series, _DEFAULT_FEEDS)
+
+    all_headlines: list[str] = []
+
+    with ThreadPoolExecutor(max_workers=len(urls)) as pool:
+        futures = {pool.submit(_fetch_one_feed, url): url for url in urls}
+        for future in as_completed(futures, timeout=10):
+            url = futures[future]
+            try:
+                items = future.result()
+                all_headlines.extend(items)
+            except Exception as exc:
+                log.debug("RSS feed %s failed (skipping): %s", url, exc)
+
+    if not all_headlines:
+        return ""
+
+    lines = "\n".join(f"- {h}" for h in all_headlines[:10])
+    return f"Recent news headlines:\n{lines}"
+
+
+# ---------------------------------------------------------------------------
 # Core research function
 # ---------------------------------------------------------------------------
 
@@ -154,6 +264,11 @@ def research(ticker: str) -> dict:
 
     search_query = build_search_query(market)
     log.info("Web search query: %s", search_query)
+
+    # Fetch RSS headlines for additional real-time context
+    rss_context = fetch_rss_headlines(ticker, title)
+    headline_count = rss_context.count("\n-") if rss_context else 0
+    log.info("Fetched %d RSS headlines for %s", headline_count, ticker)
 
     # Build the user message with market context
     market_context = f"""\
@@ -180,7 +295,8 @@ Today's date  : {datetime.now(timezone.utc).strftime("%Y-%m-%d")}
                 "role": "user",
                 "content": (
                     f"Here are the market details:\n\n{market_context}\n\n"
-                    f"Please search the web for: {search_query}\n\n"
+                    + (f"{rss_context}\n\n" if rss_context else "")
+                    + f"Please search the web for: {search_query}\n\n"
                     "Then analyze the market and return your JSON research brief."
                 ),
             }
