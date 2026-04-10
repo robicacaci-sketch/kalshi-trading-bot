@@ -21,9 +21,15 @@ venv/
 env/
 
 # Data and logs
+data/logs/*.json
 data/logs/*.log
-data/logs/*.jsonl
 data/cache/
+
+# Keep state.json tracked (bankroll + open positions)
+!data/logs/state.json
+
+# Kill switch
+STOP
 
 # IDE
 .vscode/
