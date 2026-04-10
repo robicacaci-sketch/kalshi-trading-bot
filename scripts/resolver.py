@@ -17,6 +17,13 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 import config
+from scripts.performance import (
+    append_history_snapshot,
+    build_metrics,
+    load_placed_trades,
+    load_resolved_trades,
+    load_state as perf_load_state,
+)
 
 log = logging.getLogger("resolver")
 if not log.handlers:
@@ -135,6 +142,18 @@ def resolve_positions() -> None:
         "Resolved %d position(s) | %d still open | bankroll=$%.2f",
         resolved_count, len(remaining), bankroll,
     )
+
+    # Snapshot current performance metrics to history after each resolution
+    try:
+        metrics = build_metrics(
+            load_placed_trades(),
+            load_resolved_trades(),
+            perf_load_state(),
+        )
+        append_history_snapshot(metrics)
+        log.info("Performance snapshot appended to history")
+    except Exception as exc:
+        log.error("Failed to append performance snapshot (non-fatal): %s", exc)
 
 
 if __name__ == "__main__":

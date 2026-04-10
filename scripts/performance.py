@@ -21,6 +21,7 @@ EXECUTOR_LOG  = config.LOG_DIR / "executor_log.json"
 RESOLVER_LOG  = config.LOG_DIR / "resolver.log"
 STATE_FILE    = config.LOG_DIR / "state.json"
 PERF_OUT      = config.LOG_DIR / "performance.json"
+PERF_HISTORY  = config.LOG_DIR / "performance_history.json"
 
 # Regex for resolver.log RESOLVED lines:
 # RESOLVED KXCPI-26MAR-T0.8 | side=no result=yes | P&L=$-49.68 | new bankroll=$778.74
@@ -190,6 +191,112 @@ def build_metrics(placed: list[dict], resolved: list[dict], state: dict) -> dict
 
 
 # ---------------------------------------------------------------------------
+# Performance history (JSON Lines)
+# ---------------------------------------------------------------------------
+
+def append_history_snapshot(metrics: dict) -> None:
+    """Append a condensed snapshot of current metrics to performance_history.json."""
+    snapshot = {
+        "timestamp":       metrics["generated_at"],
+        "bankroll":        metrics["current_bankroll"],
+        "total_trades":    metrics["total_placed"],
+        "resolved_trades": metrics["total_resolved"],
+        "wins":            metrics["wins"],
+        "losses":          metrics["losses"],
+        "win_rate":        metrics["win_rate"],
+        "brier_score":     metrics["brier_score"],
+        "total_pnl":       metrics["total_pnl"],
+    }
+    PERF_HISTORY.parent.mkdir(parents=True, exist_ok=True)
+    with open(PERF_HISTORY, "a") as f:
+        f.write(json.dumps(snapshot) + "\n")
+
+
+def load_history() -> list[dict]:
+    """Load all snapshots from performance_history.json (JSON Lines)."""
+    if not PERF_HISTORY.exists():
+        return []
+    entries = []
+    with open(PERF_HISTORY) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                entries.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return entries
+
+
+# ---------------------------------------------------------------------------
+# Weekly trend
+# ---------------------------------------------------------------------------
+
+def print_weekly_trend(history: list[dict]) -> None:
+    """Print week-over-week changes in win_rate and brier_score."""
+    if not history:
+        return
+
+    # Group snapshots by ISO year-week
+    from collections import defaultdict
+    weeks: dict[str, list[dict]] = defaultdict(list)
+    for entry in history:
+        try:
+            dt = datetime.fromisoformat(entry["timestamp"])
+        except (ValueError, KeyError):
+            continue
+        iso = dt.isocalendar()
+        key = f"{iso.year}-W{iso.week:02d}"
+        weeks[key].append(entry)
+
+    if len(weeks) < 2:
+        return  # not enough weeks for a trend
+
+    def week_avg(entries: list[dict], field: str) -> float | None:
+        vals = [e[field] for e in entries if e.get(field) is not None]
+        return round(sum(vals) / len(vals), 4) if vals else None
+
+    sorted_weeks = sorted(weeks)
+    sep  = "=" * 58
+    sep2 = "-" * 58
+
+    print(f"\n{sep}")
+    print(f"  Weekly Trend  (win rate & Brier score)")
+    print(sep)
+    print(f"  {'Week':<12} {'Win rate':>9} {'Δ win rate':>11}  {'Brier':>7} {'Δ Brier':>8}")
+    print(sep2)
+
+    prev_wr = prev_bs = None
+    for week in sorted_weeks:
+        entries = weeks[week]
+        wr = week_avg(entries, "win_rate")
+        bs = week_avg(entries, "brier_score")
+
+        wr_str = f"{wr*100:.1f}%" if wr is not None else "  n/a"
+        bs_str = f"{bs:.4f}"      if bs is not None else "    n/a"
+
+        if prev_wr is not None and wr is not None:
+            delta_wr = wr - prev_wr
+            dwr_str = f"{'+' if delta_wr >= 0 else ''}{delta_wr*100:.1f}%"
+        else:
+            dwr_str = "     —"
+
+        if prev_bs is not None and bs is not None:
+            delta_bs = bs - prev_bs
+            dbs_str = f"{'+' if delta_bs >= 0 else ''}{delta_bs:.4f}"
+        else:
+            dbs_str = "      —"
+
+        print(f"  {week:<12} {wr_str:>9} {dwr_str:>11}  {bs_str:>7} {dbs_str:>8}")
+
+        prev_wr = wr
+        prev_bs = bs
+
+    print(f"{sep}\n")
+
+
+# ---------------------------------------------------------------------------
 # Report printing
 # ---------------------------------------------------------------------------
 
@@ -255,15 +362,18 @@ def print_report(m: dict) -> None:
 
     print(f"{sep}\n")
 
+    history = load_history()
+    print_weekly_trend(history)
+
 
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    placed  = load_placed_trades()
+    placed   = load_placed_trades()
     resolved = load_resolved_trades()
-    state   = load_state()
+    state    = load_state()
 
     if not placed and not resolved:
         print("No trade data found. Run the executor first.")
@@ -271,7 +381,8 @@ def main() -> None:
 
     metrics = build_metrics(placed, resolved, state)
 
-    # Save to disk
+    # Save snapshot to history and full metrics to disk
+    append_history_snapshot(metrics)
     PERF_OUT.parent.mkdir(parents=True, exist_ok=True)
     with open(PERF_OUT, "w") as f:
         json.dump(metrics, f, indent=2)

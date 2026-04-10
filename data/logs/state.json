@@ -1,5 +1,5 @@
 {
-  "current_bankroll": 695.02,
+  "current_bankroll": 667.02,
   "current_positions": [
     {
       "ticker": "KXGDP-26APR30-T2.0",
@@ -27,11 +27,20 @@
       "size_dollars": 36.4,
       "order_id": "70b6111c-31f6-4494-838a-4adf3928a026",
       "placed_at": "2026-04-10T13:53:48.683692+00:00"
+    },
+    {
+      "ticker": "KXCPI-26MAY-T0.3",
+      "side": "yes",
+      "count": 70,
+      "price": 0.4,
+      "size_dollars": 28.0,
+      "order_id": "456927fb-e843-423c-940e-b6bd457a0a0b",
+      "placed_at": "2026-04-10T18:12:30.351157+00:00"
     }
   ],
   "daily_pnl": 0.0,
   "date": "2026-04-10",
-  "last_run": "2026-04-10T17:00:04.564659+00:00",
-  "daily_research_calls": 1,
+  "last_run": "2026-04-10T20:09:03.718743+00:00",
+  "daily_research_calls": 2,
   "last_run_date": "2026-04-10"
 }
