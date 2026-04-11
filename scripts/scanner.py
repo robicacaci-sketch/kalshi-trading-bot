@@ -177,7 +177,7 @@ def relaxed_score(m: dict) -> float:
 
     # Macro bonus: FED/CPI/GDP/INX markets have rich public data and genuine edge.
     if series in MACRO_SERIES:
-        score += 0.5
+        score += 0.2
 
     # Same-day expiry penalty: scarce information edge, thin price ranges.
     if dte < 0.5:
