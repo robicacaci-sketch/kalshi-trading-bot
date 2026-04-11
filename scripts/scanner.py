@@ -205,8 +205,8 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
 
     if relaxed:
         min_volume = 0
-        max_days = 90
-        log.info("--relaxed mode: volume=any, max_days=90, limit=%d, no candlestick calls", RELAXED_MARKET_LIMIT)
+        max_days = 30
+        log.info("--relaxed mode: volume=any, max_days=30, limit=%d, no candlestick calls", RELAXED_MARKET_LIMIT)
 
     log.info("Fetching markets from %s...", config.KALSHI_BASE_URL)
     fetch_limit = RELAXED_MARKET_LIMIT if relaxed else None
@@ -270,6 +270,43 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
             " (dropped %d)",
             MIN_OPEN_INTEREST, MIN_ASK_SIZE, MIN_VOLUME, len(after_expiry),
             before_liquidity - len(after_expiry),
+        )
+
+        # --- Anomaly flagging (informational only — does not affect scoring or filtering) ---
+        def flag_anomalies(m: dict) -> list[str]:
+            flags: list[str] = []
+            yes_ask  = float(m.get("yes_ask_dollars") or 0)
+            yes_bid  = float(m.get("yes_bid_dollars") or 0)
+            prev_ask = float(m.get("previous_yes_ask_dollars") or 0)
+
+            if prev_ask > 0:
+                move = abs(yes_ask - prev_ask) / max(prev_ask, 0.01)
+                if move > 0.10:
+                    flags.append("PRICE_MOVE >10%")
+
+            if yes_bid > 0 and (yes_ask - yes_bid) > 0.05:
+                flags.append("WIDE_SPREAD >5c")
+
+            if yes_bid == 0:
+                flags.append("NO_BID")
+
+            return flags
+
+        for m in after_expiry:
+            m["anomalies"] = flag_anomalies(m)
+
+        anomaly_counts: dict[str, int] = {"PRICE_MOVE >10%": 0, "WIDE_SPREAD >5c": 0, "NO_BID": 0}
+        for m in after_expiry:
+            for flag in m["anomalies"]:
+                if flag in anomaly_counts:
+                    anomaly_counts[flag] += 1
+        markets_with_anomalies = sum(1 for m in after_expiry if m["anomalies"])
+        log.info(
+            "Markets with anomalies: %d (PRICE_MOVE: %d, WIDE_SPREAD: %d, NO_BID: %d)",
+            markets_with_anomalies,
+            anomaly_counts["PRICE_MOVE >10%"],
+            anomaly_counts["WIDE_SPREAD >5c"],
+            anomaly_counts["NO_BID"],
         )
 
         # --- Relaxed ranking: score purely on urgency + price attractiveness, no API calls ---
@@ -390,6 +427,7 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
             "direction": m.get("direction"),
             "score": m.get("score"),
             "close_time": m.get("close_time"),
+            "anomalies": m.get("anomalies", []),
             "scanned_at": datetime.now(timezone.utc).isoformat(),
         })
 
@@ -415,7 +453,7 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
         print("=" * len(cat_header))
 
     # --- Print global combined table ---
-    header = f"{'Rank':<5} {'Ticker':<30} {'Yes $':<7} {'Move':>8} {'Volume':>8} {'Days':>5} {'Score':>6}"
+    header = f"{'Rank':<5} {'Ticker':<30} {'Yes $':<7} {'Move':>8} {'Volume':>8} {'Days':>5} {'Score':>6}  Anomalies"
     print("\n" + "=" * len(header))
     print(f"Kalshi Scanner Results  |  {now_str}  |  {mode_label}")
     print("=" * len(header))
@@ -434,9 +472,10 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
             move_str = f"{move_pct:.1f}%"
         yes_price = r.get("yes_price") or 0
         volume = r.get("volume") or 0
+        anomaly_str = " ".join(r.get("anomalies") or [])
         print(
             f"{i:<5} {r['ticker']:<30} {yes_price:<7.2f} {move_str:>8} "
-            f"{volume:>8} {r['days_to_expiry']:>5} {r['score']:>6.3f}"
+            f"{volume:>8} {r['days_to_expiry']:>5} {r['score']:>6.3f}  {anomaly_str}"
         )
     print("=" * len(header) + "\n")
 
@@ -452,7 +491,7 @@ def main():
     parser.add_argument(
         "--relaxed",
         action="store_true",
-        help="Demo-friendly mode: skip volume filter, extend expiry to 90 days, "
+        help="Demo-friendly mode: skip volume filter, extend expiry to 30 days, "
              "lower price-move to 1%%, and show top 10 by score regardless of filters.",
     )
     args = parser.parse_args()
