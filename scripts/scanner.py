@@ -72,15 +72,20 @@ RELAXED_MARKET_LIMIT = 2000
 TOP_PER_CATEGORY = 3
 TOP_PER_CATEGORY_CRYPTO = 2   # applied to KXBTC and KXETH
 
-MACRO_SERIES = {"KXFED", "KXCPI", "KXGDP", "KXINX"}
+MACRO_SERIES = {
+    "KXFED", "KXCPI", "KXGDP", "KXINX",
+    "KXGOLD", "KXQRECESS", "KXTARIFFS", "KXNATGASW", "KXYINVERT",
+}
 NARROW_CRYPTO_SERIES = {"KXBTC", "KXETH"}
 
 MIN_OPEN_INTEREST = 100   # contracts; below this the market is essentially empty
 MIN_ASK_SIZE = 50         # contracts; minimum ask-side depth to get filled
+MIN_VOLUME = 100          # contracts; market needs this total volume OR recent 24h activity
 
 CATEGORY_TICKERS = [
     "KXBTC", "KXETH", "KXINX", "KXSPY", "KXFED", "KXCPI",
     "KXGDP", "KXNHL", "KXNBA", "KXMLB",
+    "KXGOLD", "KXQRECESS", "KXTARIFFS", "KXNATGASW", "KXYINVERT",
 ]
 
 
@@ -243,7 +248,7 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
         after_expiry = [m for m in after_expiry if has_pricing(m)]
         log.info("After dropping zero-priced markets: %d markets", len(after_expiry))
 
-        # Liquidity filter: drop markets with no meaningful open interest or ask depth
+        # Liquidity filter: drop markets with no meaningful open interest, ask depth, or volume
         def is_liquid(m: dict) -> bool:
             oi = float(m.get("open_interest_fp") or 0)
             if oi < MIN_OPEN_INTEREST:
@@ -252,14 +257,18 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
             ask_size = float(m.get("yes_ask_size_fp") or 0)
             if yes_bid == 0 and ask_size < MIN_ASK_SIZE:
                 return False
+            volume = float(m.get("volume_fp") or 0)
+            volume_24h = float(m.get("volume_24h_fp") or 0)
+            if volume < MIN_VOLUME and volume_24h < 50:
+                return False
             return True
 
         before_liquidity = len(after_expiry)
         after_expiry = [m for m in after_expiry if is_liquid(m)]
         log.info(
-            "After liquidity filter (OI>=%d, ask_size>=%d when no bid): %d markets"
+            "After liquidity filter (OI>=%d, ask_size>=%d when no bid, vol>=%d): %d markets"
             " (dropped %d)",
-            MIN_OPEN_INTEREST, MIN_ASK_SIZE, len(after_expiry),
+            MIN_OPEN_INTEREST, MIN_ASK_SIZE, MIN_VOLUME, len(after_expiry),
             before_liquidity - len(after_expiry),
         )
 
