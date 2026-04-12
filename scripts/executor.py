@@ -487,13 +487,15 @@ def run_once() -> dict:
         # --- 4d. Compute order parameters ---
         # count must be at least 1 contract
         count = max(1, int(validation["position_size_contracts"]))
-        # Limit price = market ask (we accept the current price, not better)
-        price_cents = max(1, min(99, round(val_price * 100)))
-        actual_cost = count * val_price   # dollars committed
+        # Add 2¢ to market ask to behave like a marketable limit order and
+        # improve fill probability.  Cap at 99¢.
+        ask_cents = round(val_price * 100)
+        price_cents = min(99, ask_cents + 2)
+        actual_cost = count * (price_cents / 100.0)   # dollars committed at taker price
 
         log.info(
-            "APPROVED %s | side=%s count=%d price=%dc kelly=%.4f cost=$%.2f",
-            ticker, side, count, price_cents, validation["kelly_fraction"], actual_cost,
+            "APPROVED %s | side=%s count=%d ask=%dc price=%dc kelly=%.4f cost=$%.2f",
+            ticker, side, count, ask_cents, price_cents, validation["kelly_fraction"], actual_cost,
         )
 
         # --- 4e. Place order ---

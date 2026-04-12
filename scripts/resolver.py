@@ -42,6 +42,22 @@ STATE_FILE = config.LOG_DIR / "state.json"
 LIVE_BASE_URL = "https://api.elections.kalshi.com/trade-api/v2"
 
 
+def _fetch_order(order_id: str) -> dict | None:
+    """Fetch a single order from the live API (no auth needed for public order status)."""
+    # Order status requires auth; use the authenticated base URL if available,
+    # otherwise skip silently — this is advisory only.
+    url = f"{LIVE_BASE_URL}/portfolio/orders/{order_id}"
+    try:
+        resp = requests.get(url, timeout=10)
+    except requests.RequestException as exc:
+        log.debug("HTTP error fetching order %s: %s", order_id, exc)
+        return None
+    if resp.ok:
+        return resp.json().get("order")
+    # 401/403 expected for unauthenticated calls — not an error worth logging
+    return None
+
+
 def _fetch_market(ticker: str) -> dict | None:
     url = f"{LIVE_BASE_URL}/markets/{ticker}"
     try:
@@ -110,7 +126,24 @@ def resolve_positions() -> None:
 
         result: str = market.get("result", "")
         if result not in ("yes", "no"):
-            # Still open
+            # Still open — check if the order is stale (0 fills after 24 h)
+            order_id: str = pos.get("order_id", "")
+            placed_at_str: str = pos.get("placed_at", "")
+            if order_id and not order_id.startswith("SIMULATED-") and placed_at_str:
+                try:
+                    placed_at = datetime.fromisoformat(placed_at_str.replace("Z", "+00:00"))
+                    age_hours = (datetime.now(timezone.utc) - placed_at).total_seconds() / 3600
+                    if age_hours >= 24:
+                        order = _fetch_order(order_id)
+                        if order is not None:
+                            filled = int(order.get("filled_count") or order.get("fill_count") or 0)
+                            if filled == 0:
+                                log.warning(
+                                    "Order %s for %s has 0 fills after 24h — may be stale",
+                                    order_id, ticker,
+                                )
+                except Exception as exc:
+                    log.debug("Stale-order check failed for %s: %s", order_id, exc)
             remaining.append(pos)
             continue
 
