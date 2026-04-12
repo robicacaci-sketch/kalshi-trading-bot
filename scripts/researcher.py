@@ -246,6 +246,80 @@ def fetch_rss_headlines(ticker: str, title: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Reddit scraper (unauthenticated JSON API)
+# ---------------------------------------------------------------------------
+
+_REDDIT_TARGETS: dict[str, tuple[str, str]] = {
+    # series → (subreddit, search query)
+    "KXCPI":      ("economics+finance+investing", "CPI inflation"),
+    "KXFED":      ("economics+finance+investing", "Federal Reserve interest rate"),
+    "KXGDP":      ("economics+finance",           "GDP growth"),
+    "KXINX":      ("investing+stocks+StockMarket", "S&P 500"),
+    "KXSPY":      ("investing+stocks+StockMarket", "S&P 500"),
+    "KXBTC":      ("CryptoCurrency+Bitcoin",       "Bitcoin price"),
+    "KXETH":      ("CryptoCurrency+ethereum",      "Ethereum price"),
+    "KXGOLD":     ("investing+Gold",               "gold price"),
+    "KXQRECESS":  ("economics+finance",            "recession probability"),
+    "KXTARIFFS":  ("economics+politics",           "tariffs trade"),
+    "KXNATGASW":  ("investing+energy",             "natural gas weather"),
+    "KXYINVERT":  ("investing+bonds",              "yield curve inversion"),
+}
+
+_REDDIT_HEADERS = {"User-Agent": "kalshi-trading-bot/1.0 (research bot)"}
+
+
+def _fetch_reddit_search(subreddit: str, query: str) -> list[str]:
+    """Fetch up to 5 posts from Reddit's public search JSON and return formatted snippets."""
+    url = f"https://www.reddit.com/r/{subreddit}/search.json"
+    params = {"q": query, "sort": "new", "limit": 5, "restrict_sr": "1"}
+    resp = requests.get(url, params=params, headers=_REDDIT_HEADERS, timeout=8)
+    resp.raise_for_status()
+
+    posts = resp.json().get("data", {}).get("children", [])
+    snippets: list[str] = []
+    for post in posts:
+        data = post.get("data", {})
+        post_title = (data.get("title") or "").strip()
+        selftext   = (data.get("selftext") or "").strip()
+        comment_snippet = selftext[:150] if selftext and selftext != "[removed]" else ""
+        if post_title:
+            line = f"- {post_title}"
+            if comment_snippet:
+                line += f": {comment_snippet}"
+            snippets.append(line)
+    return snippets
+
+
+def fetch_reddit_posts(ticker: str, title: str) -> str:
+    """
+    Search Reddit for recent posts relevant to the market's series.
+    Uses the public JSON API — no credentials required.
+    Returns a formatted string to prepend to the Claude prompt, or "" on failure.
+    Total timeout: 8 seconds per request.
+    """
+    series = ticker.split("-")[0] if "-" in ticker else ticker
+
+    if series in _REDDIT_TARGETS:
+        subreddit, query = _REDDIT_TARGETS[series]
+    else:
+        # Default: search r/economics for the first three words of the market title
+        subreddit = "economics"
+        query = " ".join(title.split()[:3]) or title
+
+    try:
+        snippets = _fetch_reddit_search(subreddit, query)
+    except Exception as exc:
+        log.debug("Reddit fetch failed for %s (skipping): %s", ticker, exc)
+        return ""
+
+    if not snippets:
+        return ""
+
+    body = "\n".join(snippets)
+    return f"Reddit sentiment:\n{body}"
+
+
+# ---------------------------------------------------------------------------
 # Core research function
 # ---------------------------------------------------------------------------
 
@@ -265,10 +339,17 @@ def research(ticker: str) -> dict:
     search_query = build_search_query(market)
     log.info("Web search query: %s", search_query)
 
-    # Fetch RSS headlines for additional real-time context
-    rss_context = fetch_rss_headlines(ticker, title)
+    # Fetch RSS headlines and Reddit posts in parallel
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        rss_future    = pool.submit(fetch_rss_headlines, ticker, title)
+        reddit_future = pool.submit(fetch_reddit_posts,  ticker, title)
+        rss_context    = rss_future.result()
+        reddit_context = reddit_future.result()
+
     headline_count = rss_context.count("\n-") if rss_context else 0
     log.info("Fetched %d RSS headlines for %s", headline_count, ticker)
+    reddit_count = reddit_context.count("\n-") if reddit_context else 0
+    log.info("Fetched %d Reddit posts for %s", reddit_count, ticker)
 
     # Build the user message with market context
     market_context = f"""\
@@ -296,6 +377,7 @@ Today's date  : {datetime.now(timezone.utc).strftime("%Y-%m-%d")}
                 "content": (
                     f"Here are the market details:\n\n{market_context}\n\n"
                     + (f"{rss_context}\n\n" if rss_context else "")
+                    + (f"{reddit_context}\n\n" if reddit_context else "")
                     + f"Please search the web for: {search_query}\n\n"
                     "Then analyze the market and return your JSON research brief."
                 ),
