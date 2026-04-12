@@ -9,8 +9,10 @@ Usage:
 """
 
 import json
+import math
 import re
 import sys
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -24,8 +26,9 @@ PERF_OUT      = config.LOG_DIR / "performance.json"
 PERF_HISTORY  = config.LOG_DIR / "performance_history.json"
 
 # Regex for resolver.log RESOLVED lines:
-# RESOLVED KXCPI-26MAR-T0.8 | side=no result=yes | P&L=$-49.68 | new bankroll=$778.74
+# 2026-04-10 09:53:48,948 [INFO] RESOLVED KXCPI-26MAR-T0.8 | side=no result=yes | P&L=$-49.68 | new bankroll=$778.74
 _RESOLVED_RE = re.compile(
+    r"(?P<log_date>\d{4}-\d{2}-\d{2}) \d{2}:\d{2}:\d{2}.*?"
     r"RESOLVED (?P<ticker>\S+) \| side=(?P<side>\w+) result=(?P<result>\w+) "
     r"\| P&L=\$(?P<pnl>-?[\d.]+) \| new bankroll=\$(?P<bankroll>[\d.]+)"
 )
@@ -65,11 +68,12 @@ def load_resolved_trades() -> list[dict]:
             if not m:
                 continue
             resolved.append({
-                "ticker":   m.group("ticker"),
-                "side":     m.group("side"),
-                "result":   m.group("result"),
-                "pnl":      float(m.group("pnl")),
-                "bankroll": float(m.group("bankroll")),
+                "ticker":     m.group("ticker"),
+                "side":       m.group("side"),
+                "result":     m.group("result"),
+                "pnl":        float(m.group("pnl")),
+                "bankroll":   float(m.group("bankroll")),
+                "resolved_date": m.group("log_date"),   # YYYY-MM-DD, used for Sharpe
             })
     return resolved
 
@@ -79,6 +83,58 @@ def load_state() -> dict:
         return {}
     with open(STATE_FILE) as f:
         return json.load(f)
+
+
+# ---------------------------------------------------------------------------
+# Failure classification
+# ---------------------------------------------------------------------------
+
+_SHOCK_KEYWORDS = {
+    "war", "ceasefire", "surprise", "unexpected", "shock", "crisis",
+    "collapse", "emergency", "invasion", "sanctions", "tariff", "escalat",
+}
+_TIMING_KEYWORDS = {
+    "before resolution", "moved against", "reversed", "prior to", "ahead of",
+    "before expiry", "timing", "too early",
+}
+
+
+def _load_research_brief(ticker: str) -> dict:
+    """Return the most recent research brief JSON for ticker, or {} if not found."""
+    safe = ticker.replace("/", "-")
+    # Glob for all briefs for this ticker, take the most recent by filename sort
+    matches = sorted(config.LOG_DIR.glob(f"research_{safe}_*.json"))
+    if not matches:
+        return {}
+    try:
+        with open(matches[-1]) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def classify_failure(trade: dict) -> str:
+    """
+    Classify a losing trade into one of four categories:
+      LOW_EDGE       — claimed edge < 10% (borderline trade, shouldn't have taken it)
+      EXTERNAL_SHOCK — reasoning mentions surprise/shock keywords
+      BAD_TIMING     — reasoning mentions timing-related language
+      BAD_PREDICTION — default (Claude was wrong, no obvious external cause)
+    """
+    edge_pct = trade.get("edge_pct")
+    if edge_pct is not None and abs(edge_pct) < 10:
+        return "LOW_EDGE"
+
+    brief = _load_research_brief(trade["ticker"])
+    reasoning = (brief.get("reasoning") or "").lower()
+    risks_text = " ".join(brief.get("risks") or []).lower()
+    combined = reasoning + " " + risks_text
+
+    if any(kw in combined for kw in _SHOCK_KEYWORDS):
+        return "EXTERNAL_SHOCK"
+    if any(kw in combined for kw in _TIMING_KEYWORDS):
+        return "BAD_TIMING"
+    return "BAD_PREDICTION"
 
 
 # ---------------------------------------------------------------------------
@@ -161,6 +217,36 @@ def build_metrics(placed: list[dict], resolved: list[dict], state: dict) -> dict
     else:
         brier_score = None
 
+    # --- Sharpe Ratio ---
+    # Group resolved P&L by calendar day, compute annualised Sharpe.
+    # Requires ≥2 days of data to compute a meaningful std.
+    daily_pnl_map: dict[str, float] = defaultdict(float)
+    for r in enriched:
+        day = (r.get("resolved_date") or "unknown")
+        daily_pnl_map[day] += r["pnl"]
+    daily_pnls = list(daily_pnl_map.values())
+    if len(daily_pnls) >= 2:
+        mean_d = sum(daily_pnls) / len(daily_pnls)
+        variance = sum((x - mean_d) ** 2 for x in daily_pnls) / (len(daily_pnls) - 1)
+        std_d = math.sqrt(variance)
+        sharpe_ratio = round((mean_d / std_d) * math.sqrt(365), 4) if std_d > 0 else None
+    else:
+        sharpe_ratio = None
+
+    # --- Profit Factor ---
+    gross_profit = sum(r["pnl"] for r in enriched if r["pnl"] > 0)
+    gross_loss   = abs(sum(r["pnl"] for r in enriched if r["pnl"] < 0))
+    profit_factor = round(gross_profit / gross_loss, 4) if gross_loss > 0 else None
+
+    # --- Failure Classification ---
+    failure_classes: dict[str, int] = {
+        "BAD_PREDICTION": 0, "EXTERNAL_SHOCK": 0, "BAD_TIMING": 0, "LOW_EDGE": 0,
+    }
+    for trade in losers:
+        label = classify_failure(trade)
+        trade["failure_class"] = label
+        failure_classes[label] = failure_classes.get(label, 0) + 1
+
     # --- Best / worst ---
     best  = max(enriched, key=lambda r: r["pnl"]) if enriched else None
     worst = min(enriched, key=lambda r: r["pnl"]) if enriched else None
@@ -184,6 +270,9 @@ def build_metrics(placed: list[dict], resolved: list[dict], state: dict) -> dict
         "avg_edge_winners": avg_edge_winners,
         "avg_edge_losers":  avg_edge_losers,
         "brier_score":      brier_score,
+        "sharpe_ratio":     sharpe_ratio,
+        "profit_factor":    profit_factor,
+        "failure_classes":  failure_classes,
         "best_trade":       best,
         "worst_trade":      worst,
         "resolved_trades":  enriched,
@@ -334,6 +423,18 @@ def print_report(m: dict) -> None:
     print(f"  Avg edge (winners)   : {m['avg_edge_winners']}%" if m["avg_edge_winners"] is not None else "  Avg edge (winners)   : n/a")
     print(f"  Avg edge (losers)    : {m['avg_edge_losers']}%" if m["avg_edge_losers"] is not None else "  Avg edge (losers)    : n/a")
     print(f"  Brier Score          : {fmt_score(m['brier_score'])}  (random=0.2500, perfect=0.0000)")
+    sr = m.get("sharpe_ratio")
+    print(f"  Sharpe Ratio         : {sr:.4f}  (annualised)" if sr is not None else "  Sharpe Ratio         : n/a  (need ≥2 trading days)")
+    pf = m.get("profit_factor")
+    print(f"  Profit Factor        : {pf:.4f}  (gross profit / gross loss)" if pf is not None else "  Profit Factor        : n/a  (no losses yet)")
+    print(sep2)
+
+    fc = m.get("failure_classes", {})
+    if fc and m.get("losses", 0) > 0:
+        print(f"  Failure breakdown    :")
+        for label, count in sorted(fc.items(), key=lambda x: -x[1]):
+            if count > 0:
+                print(f"    {label:<18} : {count}")
     print(sep2)
 
     if m["best_trade"]:
@@ -351,13 +452,14 @@ def print_report(m: dict) -> None:
     print(sep2)
 
     if m["resolved_trades"]:
-        print(f"  {'Ticker':<32} {'Side':<5} {'Result':<7} {'P&L':>8}  {'Edge':>6}")
-        print(f"  {'-'*32} {'-'*5} {'-'*6} {'-'*8}  {'-'*6}")
+        print(f"  {'Ticker':<32} {'Side':<5} {'Result':<7} {'P&L':>8}  {'Edge':>6}  Failure class")
+        print(f"  {'-'*32} {'-'*5} {'-'*6} {'-'*8}  {'-'*6}  {'-'*16}")
         for r in sorted(m["resolved_trades"], key=lambda x: x["placed_at"] or ""):
-            edge_str = f"{abs(r['edge_pct']):.1f}%" if r["edge_pct"] is not None else "  n/a"
+            edge_str  = f"{abs(r['edge_pct']):.1f}%" if r["edge_pct"] is not None else "  n/a"
+            fail_str  = r.get("failure_class", "") if not r["won"] else ""
             print(
                 f"  {r['ticker']:<32} {r['side']:<5} {r['result']:<7}"
-                f" {fmt_pnl(r['pnl']):>8}  {edge_str:>6}"
+                f" {fmt_pnl(r['pnl']):>8}  {edge_str:>6}  {fail_str}"
             )
 
     print(f"{sep}\n")
