@@ -61,10 +61,12 @@ STATE_FILE = config.LOG_DIR / "state.json"
 EXEC_LOG_FILE = config.LOG_DIR / "executor_log.json"
 
 MAX_MARKETS_PER_RUN = 4
+MAX_POSITIONS = 15          # max concurrent open positions before blocking new trades
 INITIAL_BANKROLL = 1000.0   # demo starting balance
 
 MAX_DAILY_API_COST = 2.00   # dollars — halt research when this is reached
 COST_PER_RESEARCH = 0.15    # dollars per research call (Anthropic API estimate)
+MAX_DRAWDOWN = 0.08         # halt trading if bankroll falls 8% below peak
 
 # ---------------------------------------------------------------------------
 # Kalshi API helpers (order placement uses KALSHI_ORDER_BASE_URL)
@@ -170,6 +172,7 @@ def place_order(
 
 _DEFAULT_STATE: dict = {
     "current_bankroll": INITIAL_BANKROLL,
+    "peak_bankroll": INITIAL_BANKROLL,
     "current_positions": [],
     "daily_pnl": 0.0,
     "date": None,
@@ -198,6 +201,11 @@ def load_state() -> dict:
     # Backfill keys missing from older state files
     state.setdefault("daily_research_calls", 0)
     state.setdefault("last_run_date", today)
+    state.setdefault("peak_bankroll", state.get("current_bankroll", INITIAL_BANKROLL))
+
+    # Update peak_bankroll whenever current bankroll exceeds it
+    if state["current_bankroll"] > state["peak_bankroll"]:
+        state["peak_bankroll"] = state["current_bankroll"]
 
     return state
 
@@ -257,11 +265,23 @@ def run_once() -> dict:
     bankroll: float = state["current_bankroll"]
     positions: list = state["current_positions"]
     daily_pnl: float = state["daily_pnl"]
+    peak_bankroll: float = state["peak_bankroll"]
 
     log.info(
-        "State loaded | bankroll=$%.2f | open_positions=%d | daily_pnl=$%.2f",
-        bankroll, len(positions), daily_pnl,
+        "State loaded | bankroll=$%.2f | peak=$%.2f | open_positions=%d | daily_pnl=$%.2f",
+        bankroll, peak_bankroll, len(positions), daily_pnl,
     )
+
+    # Drawdown guard — block all new trades if loss from peak exceeds threshold
+    drawdown_pct = (peak_bankroll - bankroll) / peak_bankroll if peak_bankroll > 0 else 0.0
+    drawdown_breached = drawdown_pct >= MAX_DRAWDOWN
+    if drawdown_breached:
+        log.warning(
+            "MAX DRAWDOWN REACHED: %.1f%% drawdown from peak $%.2f — blocking all new trades",
+            drawdown_pct * 100, peak_bankroll,
+        )
+        _log_action({"event": "DRAWDOWN_BREACH", "drawdown_pct": round(drawdown_pct, 4),
+                     "peak_bankroll": peak_bankroll, "current_bankroll": bankroll, "at": now})
 
     # ------------------------------------------------------------------
     # 2. Load private key once (shared by scanner auth + order placement)
@@ -319,6 +339,18 @@ def run_once() -> dict:
         log.info("Processing: %s (%s)", ticker, market.get("title", ""))
 
         # --- Pre-research checks (skip before spending API credits) ---
+
+        # Block new trades if drawdown threshold was breached this run
+        if drawdown_breached:
+            log.info("Drawdown block active — skipping %s", ticker)
+            summary["actions"].append({"ticker": ticker, "event": "skipped_drawdown_block"})
+            continue
+
+        # Block new trades if max concurrent positions reached
+        if len(positions) >= MAX_POSITIONS:
+            log.info("Max positions reached (%d) — skipping %s", MAX_POSITIONS, ticker)
+            summary["actions"].append({"ticker": ticker, "event": "skipped_max_positions"})
+            continue
 
         # Skip markets we already hold a position in
         held_tickers = {p["ticker"] for p in positions}
