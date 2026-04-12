@@ -205,8 +205,8 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
 
     if relaxed:
         min_volume = 0
-        max_days = 30
-        log.info("--relaxed mode: volume=any, max_days=30, limit=%d, no candlestick calls", RELAXED_MARKET_LIMIT)
+        max_days = 60
+        log.info("--relaxed mode: volume=any, max_days=60, limit=%d, no candlestick calls", RELAXED_MARKET_LIMIT)
 
     log.info("Fetching markets from %s...", config.KALSHI_BASE_URL)
     fetch_limit = RELAXED_MARKET_LIMIT if relaxed else None
