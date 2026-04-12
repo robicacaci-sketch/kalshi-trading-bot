@@ -9,42 +9,6 @@
       "size_dollars": 36.4,
       "order_id": "70b6111c-31f6-4494-838a-4adf3928a026",
       "placed_at": "2026-04-10T13:53:48.683692+00:00"
-    },
-    {
-      "ticker": "KXCPI-26MAY-T0.3",
-      "side": "yes",
-      "count": 70,
-      "price": 0.4,
-      "size_dollars": 28.0,
-      "order_id": "456927fb-e843-423c-940e-b6bd457a0a0b",
-      "placed_at": "2026-04-10T18:12:30.351157+00:00"
-    },
-    {
-      "ticker": "KXGDP-26APR30-T2.0",
-      "side": "no",
-      "count": 70,
-      "price": 0.47,
-      "size_dollars": 32.9,
-      "order_id": "f4bb6d01-98e2-4184-b953-03ed326fa660",
-      "placed_at": "2026-04-12T18:47:57.236006+00:00"
-    },
-    {
-      "ticker": "KXCPI-26APR-T0.6",
-      "side": "no",
-      "count": 32,
-      "price": 0.5700000000000001,
-      "size_dollars": 18.24,
-      "order_id": "68d84712-7f18-426c-b574-44c1d1fc20d6",
-      "placed_at": "2026-04-12T18:47:57.236006+00:00"
-    },
-    {
-      "ticker": "KXCPI-26MAY-T0.2",
-      "side": "yes",
-      "count": 14,
-      "price": 0.54,
-      "size_dollars": 7.56,
-      "order_id": "1c3dd7de-768e-4a26-b589-5d0470462279",
-      "placed_at": "2026-04-12T19:09:35.616381+00:00"
     }
   ],
   "daily_pnl": 0.0,
