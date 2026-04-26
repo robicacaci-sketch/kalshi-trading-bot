@@ -263,6 +263,12 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
                 return False
             return True
 
+        def is_two_sided(m: dict) -> bool:
+            """Require an active bid AND ask on both sides of the market."""
+            yes_bid = float(m.get("yes_bid_dollars") or 0)
+            yes_ask = float(m.get("yes_ask_dollars") or 0)
+            return yes_bid > 0 and yes_ask > 0 and yes_ask < 0.99
+
         before_liquidity = len(after_expiry)
         after_expiry = [m for m in after_expiry if is_liquid(m)]
         log.info(
@@ -270,6 +276,13 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
             " (dropped %d)",
             MIN_OPEN_INTEREST, MIN_ASK_SIZE, MIN_VOLUME, len(after_expiry),
             before_liquidity - len(after_expiry),
+        )
+
+        before_two_sided = len(after_expiry)
+        after_expiry = [m for m in after_expiry if is_two_sided(m)]
+        log.info(
+            "After two-sided market filter: %d markets (dropped %d for no active bid)",
+            len(after_expiry), before_two_sided - len(after_expiry),
         )
 
         # --- Anomaly flagging (informational only — does not affect scoring or filtering) ---
@@ -312,8 +325,10 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
         # --- Relaxed ranking: score purely on urgency + price attractiveness, no API calls ---
         pool = after_expiry
         for m in pool:
-            yes_bid = float(m.get("yes_bid_dollars") or m.get("yes_ask_dollars") or 0)
-            m["yes_price"] = yes_bid
+            yes_ask_val = float(m.get("yes_ask_dollars") or 0)
+            yes_bid_val = float(m.get("yes_bid_dollars") or 0)
+            m["yes_price"] = yes_ask_val
+            m["yes_bid"] = yes_bid_val
             m["price_move_pct"] = None
             m["direction"] = "n/a"
             m["days_to_expiry"] = round(days_to_expiry(m.get("close_time", "")), 1)
@@ -420,6 +435,7 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
             "ticker": m.get("ticker"),
             "title": m.get("title"),
             "yes_price": yes_price,
+            "yes_bid": m.get("yes_bid", 0),
             "no_price": round(1 - yes_price, 4),
             "volume": m.get("volume"),
             "days_to_expiry": m.get("days_to_expiry"),
@@ -453,7 +469,7 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
         print("=" * len(cat_header))
 
     # --- Print global combined table ---
-    header = f"{'Rank':<5} {'Ticker':<30} {'Yes $':<7} {'Move':>8} {'Volume':>8} {'Days':>5} {'Score':>6}  Anomalies"
+    header = f"{'Rank':<5} {'Ticker':<30} {'Ask $':<7} {'Bid $':<7} {'Move':>8} {'Days':>5} {'Score':>6}  Anomalies"
     print("\n" + "=" * len(header))
     print(f"Kalshi Scanner Results  |  {now_str}  |  {mode_label}")
     print("=" * len(header))
@@ -470,12 +486,12 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
             move_str = f"-{move_pct:.1f}%"
         else:
             move_str = f"{move_pct:.1f}%"
-        yes_price = r.get("yes_price") or 0
-        volume = r.get("volume") or 0
+        yes_ask = r.get("yes_price") or 0
+        yes_bid = r.get("yes_bid") or 0
         anomaly_str = " ".join(r.get("anomalies") or [])
         print(
-            f"{i:<5} {r['ticker']:<30} {yes_price:<7.2f} {move_str:>8} "
-            f"{volume:>8} {r['days_to_expiry']:>5} {r['score']:>6.3f}  {anomaly_str}"
+            f"{i:<5} {r['ticker']:<30} {yes_ask:<7.2f} {yes_bid:<7.2f} {move_str:>8} "
+            f"{r['days_to_expiry']:>5} {r['score']:>6.3f}  {anomaly_str}"
         )
     print("=" * len(header) + "\n")
 
