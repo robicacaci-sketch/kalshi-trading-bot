@@ -30,7 +30,7 @@ MIN_EDGE = 0.04                # 4% minimum edge (estimated_prob - market_price)
 MAX_POSITION_PCT = 0.05        # max 5% of bankroll per position
 MAX_DAILY_LOSS_PCT = 0.15      # block trading if day's loss exceeds 15% of bankroll
 MAX_CONCURRENT_POSITIONS = 15  # hard cap on open positions
-MAX_TOTAL_EXPOSURE_PCT = 0.20  # max 20% of bankroll across all open positions
+MAX_TOTAL_EXPOSURE_PCT = 0.50  # max 50% of bankroll across all open positions
 
 RISK_LOG_PATH = config.LOG_DIR / "risk_log.json"
 
