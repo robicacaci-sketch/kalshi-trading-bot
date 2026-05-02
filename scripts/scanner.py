@@ -81,6 +81,7 @@ NARROW_CRYPTO_SERIES = {"KXBTC", "KXETH"}
 MIN_OPEN_INTEREST = 100   # contracts; below this the market is essentially empty
 MIN_ASK_SIZE = 50         # contracts; minimum ask-side depth to get filled
 MIN_VOLUME = 100          # contracts; market needs this total volume OR recent 24h activity
+MIN_VOLUME_24H = 200      # contracts; minimum 24h volume for active recent trading
 
 CATEGORY_TICKERS = [
     "KXBTC", "KXETH", "KXINX", "KXSPY", "KXFED", "KXCPI",
@@ -283,6 +284,16 @@ def scan(category: str | None, min_volume: int, max_days: int, price_move_pct: f
         log.info(
             "After two-sided market filter: %d markets (dropped %d for no active bid)",
             len(after_expiry), before_two_sided - len(after_expiry),
+        )
+
+        before_vol24h = len(after_expiry)
+        after_expiry = [
+            m for m in after_expiry
+            if float(m.get("volume_24h_fp") or 0) >= MIN_VOLUME_24H
+        ]
+        log.info(
+            "After volume_24h filter (>= %d): %d markets (dropped %d)",
+            MIN_VOLUME_24H, len(after_expiry), before_vol24h - len(after_expiry),
         )
 
         # --- Anomaly flagging (informational only — does not affect scoring or filtering) ---
